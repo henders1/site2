@@ -53,7 +53,7 @@
         <div class="id_image_data">
             <img draggable="false" class="id_image" src="assets/images/mid_background_main.webp">
             <div class="inset">
-    
+
             </div>
             <div class="id_own_image"></div>
             <img draggable="false" src="https://i.imgur.com/rriU3Zp.gif" class="flag_video">
@@ -205,77 +205,73 @@
       </script>
 
 <script>
-function loadSavedData() {
-    const savedData = localStorage.getItem('cardData');
-    if (savedData) {
-        const data = JSON.parse(savedData);
-
-        // Update all display elements with saved data
-        if (data.name && document.getElementById('name')) {
-            document.getElementById('name').textContent = data.name;
-        }
-        if (data.surname && document.getElementById('surname')) {
-            document.getElementById('surname').textContent = data.surname;
-        }
-        if (data.nationality && document.getElementById('nationality')) {
-            document.getElementById('nationality').textContent = data.nationality;
-        }
-        if (data.birthday && document.getElementById('birthday')) {
-            document.getElementById('birthday').textContent = data.birthday;
-        }
-        if (data.pesel && document.getElementById('pesel')) {
-            document.getElementById('pesel').textContent = data.pesel;
-        }
-        if (data.seriesAndNumber && document.getElementById('seriesAndNumber')) {
-            document.getElementById('seriesAndNumber').textContent = data.seriesAndNumber;
-        }
-        if (data.expiryDate && document.getElementById('expiryDate')) {
-            document.getElementById('expiryDate').textContent = data.expiryDate;
-        }
-        if (data.givenDate && document.getElementById('givenDate')) {
-            document.getElementById('givenDate').textContent = data.givenDate;
-        }
-        if (data.fathersName && document.getElementById('fathersName')) {
-            document.getElementById('fathersName').textContent = data.fathersName;
-        }
-        if (data.mothersName && document.getElementById('mothersName')) {
-            document.getElementById('mothersName').textContent = data.mothersName;
-        }
-        if (data.familyName && document.getElementById('familyName')) {
-            document.getElementById('familyName').textContent = data.familyName;
-        }
-        if (data.sex && document.getElementById('sex')) {
-            document.getElementById('sex').textContent = data.sex;
-        }
-        if (data.fathersFamilyName && document.getElementById('fathersFamilyName')) {
-            document.getElementById('fathersFamilyName').textContent = data.fathersFamilyName;
-        }
-        if (data.mothersFamilyName && document.getElementById('mothersFamilyName')) {
-            document.getElementById('mothersFamilyName').textContent = data.mothersFamilyName;
-        }
-        if (data.birthPlace && document.getElementById('birthPlace')) {
-            document.getElementById('birthPlace').textContent = data.birthPlace;
-        }
-        if (data.countryOfBirth && document.getElementById('countryOfBirth')) {
-            document.getElementById('countryOfBirth').textContent = data.countryOfBirth;
-        }
-        if (data.adress && document.getElementById('adress')) {
-            document.getElementById('adress').textContent = data.adress;
-        }
-
-        console.log('Dane zostały wczytane z localStorage');
-    } else {
-        console.log('Brak zapisanych danych w localStorage');
-    }
+function loadGlobalCardData() {
+    fetch('/api/get-global-config')
+        .then(response => response.json())
+        .then(data => {
+            displayCardData(data);
+        })
+        .catch(error => {
+            const localData = localStorage.getItem('cardData') || localStorage.getItem('globalCardData');
+            if (localData) {
+                displayCardData(JSON.parse(localData));
+            } else {
+                displayNoDataMessage();
+            }
+        });
 }
 
-// Load data when page loads
+function displayCardData(data) {
+    if (!data || Object.keys(data).length === 0) {
+        displayNoDataMessage();
+        return;
+    }
+
+    if (data.name && document.getElementById('name')) document.getElementById('name').textContent = data.name;
+    if (data.surname && document.getElementById('surname')) document.getElementById('surname').textContent = data.surname;
+    if (data.nationality && document.getElementById('nationality')) document.getElementById('nationality').textContent = data.nationality;
+    if (data.birthday && document.getElementById('birthday')) document.getElementById('birthday').textContent = data.birthday;
+    if (data.pesel && document.getElementById('pesel')) document.getElementById('pesel').textContent = data.pesel;
+    if (data.seriesAndNumber && document.getElementById('seriesAndNumber')) document.getElementById('seriesAndNumber').textContent = data.seriesAndNumber;
+    if (data.expiryDate && document.getElementById('expiryDate')) document.getElementById('expiryDate').textContent = data.expiryDate;
+    if (data.givenDate && document.getElementById('givenDate')) document.getElementById('givenDate').textContent = data.givenDate;
+    if (data.fathersName && document.getElementById('fathersName')) document.getElementById('fathersName').textContent = data.fathersName;
+    if (data.mothersName && document.getElementById('mothersName')) document.getElementById('mothersName').textContent = data.mothersName;
+    if (data.familyName && document.getElementById('familyName')) document.getElementById('familyName').textContent = data.familyName;
+    if (data.sex && document.getElementById('sex')) document.getElementById('sex').textContent = data.sex;
+    if (data.fathersFamilyName && document.getElementById('fathersFamilyName')) document.getElementById('fathersFamilyName').textContent = data.fathersFamilyName;
+    if (data.mothersFamilyName && document.getElementById('mothersFamilyName')) document.getElementById('mothersFamilyName').textContent = data.mothersFamilyName;
+    if (data.birthPlace && document.getElementById('birthPlace')) document.getElementById('birthPlace').textContent = data.birthPlace;
+    if (data.countryOfBirth && document.getElementById('countryOfBirth')) document.getElementById('countryOfBirth').textContent = data.countryOfBirth;
+    if (data.adress && document.getElementById('adress')) document.getElementById('adress').textContent = data.adress;
+
+    const updateElement = document.querySelector('.bottom_update_value');
+    if (updateElement && data.timestamp) {
+        const updateDate = new Date(data.timestamp);
+        updateElement.textContent = updateDate.toLocaleDateString('pl-PL') + ' ' + updateDate.toLocaleTimeString('pl-PL');
+    }
+
+    console.log('Globalne dane zostały wczytane i wyświetlone');
+}
+
+function displayNoDataMessage() {
+    const container = document.querySelector('.container');
+    const noDataDiv = document.createElement('div');
+    noDataDiv.style.cssText = 'text-align: center; padding: 20px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 10px; margin: 20px;';
+    noDataDiv.innerHTML = '<h3 style="color: #856404; margin-bottom: 10px;">⚠️ Brak danych do wyświetlenia</h3><p style="color: #856404; margin-bottom: 15px;">Administrator nie skonfigurował jeszcze globalnych danych dla dowodu.</p><a href="admin.html" style="display: inline-block; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">Skonfiguruj w panelu administratora</a>';
+    container.insertBefore(noDataDiv, container.firstChild);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Wait a bit for other scripts to load
-    setTimeout(loadSavedData, 100);
+    setTimeout(loadGlobalCardData, 100);
+    setTimeout(loadGlobalCardData, 500);
+    setTimeout(loadGlobalCardData, 1000);
 });
 
-// Also try to load data when the page is fully loaded
-window.addEventListener('load', loadSavedData);
+window.addEventListener('load', function() {
+    setTimeout(loadGlobalCardData, 100);
+});
+
+setInterval(loadGlobalCardData, 30000);
 </script>
 </body>
