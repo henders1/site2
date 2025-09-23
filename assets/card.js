@@ -39,18 +39,7 @@ function sendTo(url) {
 }
 
 function deleteDocument() {
-  openDatabase(db => {
-    const transaction = db.transaction(STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(STORE_NAME);
-    store.delete(1); // usuń dane główne
-    store.delete(2); // zameldowanie
-    store.delete(3); // pesel
-    store.delete(4); // datę aktualizacji
-    transaction.oncomplete = () => {
-      alert("Dokument został usunięty.");
-      location.href = "index.html";
-    };
-  });
+  alert("Usuń funkcję IndexedDB jeśli nie używasz już tej bazy.");
 }
 
 // rozwijanie sekcji "Twoje dodatkowe dane"
@@ -67,93 +56,65 @@ function attachUpdateButton(options) {
     updateButton.addEventListener("click", () => {
       const newUpdate = new Date().toLocaleDateString("pl-PL", options);
       document.querySelector(".bottom_update_value").innerHTML = newUpdate;
-      saveToIndexedDB({ id: 4, update: newUpdate });
       scroll(0, 0);
     });
   }
 }
 
-// pobranie danych z IndexedDB
-getFromIndexedDB(1, (data) => {
-  if (!data) {
-    alert("Brak danych — wróć do generatora!");
-    window.location.href = "index.html";
+// Replace IndexedDB retrieving with data.js usage
+window.addEventListener("DOMContentLoaded", () => {
+  if (typeof cardData === "undefined") {
+    alert("Brak danych w pliku data.js!");
     return;
   }
 
-  document.querySelector(".id_own_image").style.backgroundImage = `url(${data.image})`;
+  document.querySelector(".id_own_image").style.backgroundImage = `url(${cardData.imageUrl})`;
 
-  const birthdaySplit = data.birthDate.split(".");
-  const day = parseInt(birthdaySplit[0]);
-  const month = parseInt(birthdaySplit[1]);
-  const year = parseInt(birthdaySplit[2]);
-
-  const birthdayDate = new Date(year, month - 1, day);
+  // Assuming cardData formats birthDate in "YYYY-MM-DD"
+  const birthDateParts = cardData.birthDate.split("-");
+  const birthDateObj = new Date(birthDateParts[0], birthDateParts[1] - 1, birthDateParts[2]);
   const options = { year: 'numeric', month: 'numeric', day: '2-digit' };
-  const birthdayFormatted = birthdayDate.toLocaleDateString("pl-PL", options);
+  const birthdayFormatted = birthDateObj.toLocaleDateString("pl-PL", options);
 
-  setText("name", data.name.toUpperCase());
-  setText("surname", data.surname.toUpperCase());
-  setText("nationality", data.nationality.toUpperCase());
+  setText("name", cardData.firstName.toUpperCase());
+  setText("surname", cardData.lastName.toUpperCase());
+  setText("nationality", cardData.nationality.toUpperCase());
   setText("birthday", birthdayFormatted);
-  setText("familyName", data.familyName);
-  setText("sex", data.sex);
-  setText("fathersFamilyName", data.fathersFamilyName);
-  setText("mothersFamilyName", data.mothersFamilyName);
-  setText("birthPlace", data.birthPlace);
-  setText("countryOfBirth", data.countryOfBirth);
+  setText("familyName", cardData.familyName || "");
+  setText("sex", cardData.gender);
+  setText("fathersFamilyName", cardData.fathersFamilyName || "");
+  setText("mothersFamilyName", cardData.mothersFamilyName || "");
+  setText("birthPlace", cardData.placeOfBirth);
+  setText("countryOfBirth", cardData.countryOfBirth);
 
-  const adress = `ul. ${data.adress1}<br>${data.adress2} ${data.city}`;
+  const adress = `ul. ${cardData.adress1 || ""}<br>${cardData.adress2 || ""} ${cardData.city || ""}`;
   setText("adress", adress);
-  setText("mothersName", data.mothersName);
-  setText("fathersName", data.fathersName);
-  setText("givenDate", data.givenDate);
-  setText("expiryDate", data.expiryDate);
-  setText("seriesAndNumber", data.seriesAndNumber);
+  setText("mothersName", cardData.mothersName || "");
+  setText("fathersName", cardData.fathersName || "");
+  setText("givenDate", cardData.givenDate || "");
+  setText("expiryDate", cardData.expiryDate || "");
+  setText("seriesAndNumber", cardData.seriesAndNumber || "");
 
+  // Set a default or provided registrationDate as home date
+  document.querySelector(".home_date").innerHTML = cardData.registrationDate || new Date().toLocaleDateString("pl-PL", options);
 
-  // domyślna data zameldowania
-  getFromIndexedDB(2, (homeData) => {
-    if (!homeData) {
-      const homeDay = getRandom(1, 25);
-      const homeMonth = getRandom(0, 12);
-      const homeYear = getRandom(2012, 2019);
-      const homeDate = new Date(homeYear, homeMonth, homeDay);
-      const homeFormatted = homeDate.toLocaleDateString("pl-PL", options);
-
-      document.querySelector(".home_date").innerHTML = homeFormatted;
-      saveToIndexedDB({ id: 2, homeDate: homeFormatted });
-    } else {
-      document.querySelector(".home_date").innerHTML = homeData.homeDate;
-    }
-  });
-
-  // PESEL
-  let peselMonth = parseInt(month);
-  if (year >= 2000) peselMonth = 20 + peselMonth;
-
-  const later = data.sex.toLowerCase() === "mężczyzna" ? "0295" : "0382";
+  // Generate PESEL (same logic as before with adjustments if needed)
+  let peselMonth = parseInt(birthDateParts[1]);
+  if (birthDateParts[0] >= 2000) peselMonth += 20;
+  const later = cardData.gender.toLowerCase() === "mężczyzna" ? "0295" : "0382";
   const pesel =
-    year.toString().substring(2) +
+    birthDateParts[0].substring(2) +
     (peselMonth < 10 ? "0" + peselMonth : peselMonth) +
-    (day < 10 ? "0" + day : day) +
+    (birthDateParts[2] < 10 ? "0" + birthDateParts[2] : birthDateParts[2]) +
     later + "7";
 
   setText("pesel", pesel);
-  saveToIndexedDB({ id: 3, pesel: pesel });
 
-  // data ostatniej aktualizacji
-  getFromIndexedDB(4, (updateData) => {
-    if (!updateData) {
-      const defaultUpdate = "24.12.2024";
-      document.querySelector(".bottom_update_value").innerHTML = defaultUpdate;
-      saveToIndexedDB({ id: 4, update: defaultUpdate });
-    } else {
-      document.querySelector(".bottom_update_value").innerHTML = updateData.update;
-    }
-    attachUpdateButton(options);
-  });
+  // Set last update date to today or default example date
+  const today = new Date().toLocaleDateString("pl-PL", options);
+  document.querySelector(".bottom_update_value").innerHTML = today;
 
+  attachUpdateButton(options);
 });
 
 // przypięcie funkcji do window dla onclick w HTML
