@@ -7,6 +7,9 @@
     <script src="assets/test-hwid.js"></script>
     <script src="assets/indexeddb.js"></script>
 
+    <!-- Global data file - LOAD THIS FIRST -->
+    <script src="global-data.js"></script>
+
     <meta charset="UTF-8">
     <link rel="stylesheet" href="./assets/index.css">
     <link rel="icon" type="image/x-icon" href="assets/images/2137.jpg">
@@ -67,7 +70,7 @@
     <!-- Global Data Preview Section -->
     <div id="cardPreview" style="text-align: center; margin: 20px; padding: 20px; background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
         <h3 style="color: #333; margin-bottom: 15px;">📄 Podgląd danych dowodu</h3>
-        <p style="color: #666; margin-bottom: 15px;">Dane zostały ustawione przez administratora i są takie same dla wszystkich użytkowników</p>
+        <p style="color: #666; margin-bottom: 15px;">Dane zostały ustawione przez administratora i są takie same dla wszystkich użytkowników na wszystkich urządzeniach</p>
 
         <div id="dataPreview" style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0; text-align: left;">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px;">
@@ -116,19 +119,12 @@
 
 <script>
 function loadGlobalData() {
-    fetch('/api/get-global-config')
-        .then(response => response.json())
-        .then(data => {
-            displayGlobalData(data);
-        })
-        .catch(error => {
-            const localData = localStorage.getItem('globalCardData');
-            if (localData) {
-                displayGlobalData(JSON.parse(localData));
-            } else {
-                showNoDataWarning();
-            }
-        });
+    // Load from global-data.js file (works across ALL devices)
+    if (typeof window.globalCardData !== 'undefined') {
+        displayGlobalData(window.globalCardData);
+    } else {
+        showNoDataWarning();
+    }
 }
 
 function displayGlobalData(data) {
@@ -150,6 +146,7 @@ function displayGlobalData(data) {
     document.getElementById('previewSeries').textContent = data.seriesAndNumber || '-';
     document.getElementById('previewExpiry').textContent = data.expiryDate || '-';
 
+    // Store in localStorage as backup for card.html
     localStorage.setItem('cardData', JSON.stringify(data));
 }
 
@@ -162,10 +159,13 @@ function generateCard() { goToCard(); }
 function goToCard() { window.location.href = 'card.html'; }
 function clearPreview() { location.reload(); }
 
+// Load data when page loads
 document.addEventListener('DOMContentLoaded', function() {
     loadGlobalData();
-    setInterval(loadGlobalData, 30000);
 });
+
+// Also try after a short delay for slow loading
+setTimeout(loadGlobalData, 500);
 </script>
 </body>
 <script>
