@@ -1,7 +1,6 @@
 <head>
     <!-- Firebase + app config ładowane modułowo -->
     <script type="module" src="assets/supabase-config.js"></script>
-
     <script type="module" src="assets/auth-check.js"></script>
 
     <!-- Skrypty klasyczne -->
@@ -24,7 +23,7 @@
           localStorage.setItem("discord_id", discordId);
         }
       </script>
-      
+
     <div class="theme-toggle">
         <div class="hamburger">
             <span></span>
@@ -59,150 +58,49 @@
         <p class="logo_text">mObywatel Maker</p>
     </div>
     <div class="button-container">
-        <a class="generate-btn">Generuj</a>
-        <a class="clear-btn">Wyczyść</a>
+        <a class="generate-btn" onclick="generateCard()">Generuj</a>
+        <a class="clear-btn" onclick="clearPreview()">Wyczyść</a>
     </div>
 
     <p class="warning">Uwaga! Strona służy wyłącznie do generowania atrap dowodów osobistych w celach rozrywkowych. Wygenerowane dokumenty nie mają wartości prawnej i nie mogą być używane jako dokument tożsamości. Autor strony nie ponosi żadnej odpowiedzialności za niewłaściwe wykorzystanie narzędzia.</p>
 
-    <div class="input_holder">
-        <div class="input-wrapper">
-            <input type="text" id="image" class="input" placeholder="">
-            <img src="assets/images/unnamed.png" class="upload-icon" onclick="document.getElementById('file-upload').click()">
+    <!-- Global Data Preview Section -->
+    <div id="cardPreview" style="text-align: center; margin: 20px; padding: 20px; background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <h3 style="color: #333; margin-bottom: 15px;">📄 Podgląd danych dowodu</h3>
+        <p style="color: #666; margin-bottom: 15px;">Dane zostały ustawione przez administratora i są takie same dla wszystkich użytkowników</p>
+
+        <div id="dataPreview" style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0; text-align: left;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px;">
+                <div><strong>Imię:</strong> <span id="previewName">-</span></div>
+                <div><strong>Nazwisko:</strong> <span id="previewSurname">-</span></div>
+                <div><strong>Data urodzenia:</strong> <span id="previewBirthday">-</span></div>
+                <div><strong>PESEL:</strong> <span id="previewPesel">-</span></div>
+                <div><strong>Obywatelstwo:</strong> <span id="previewNationality">-</span></div>
+                <div><strong>Płeć:</strong> <span id="previewSex">-</span></div>
+                <div style="grid-column: 1 / -1;"><strong>Adres:</strong> <span id="previewAdress">-</span></div>
+                <div><strong>Seria dowodu:</strong> <span id="previewSeries">-</span></div>
+                <div><strong>Data ważności:</strong> <span id="previewExpiry">-</span></div>
+            </div>
         </div>
-        <span class="placeholder">Link do zdjęcia (imgur)</span>
-        <p class="error">To pole jest wymagane</p>
-        <input type="file" id="file-upload" accept="image/*" style="display: none">
+
+        <button onclick="goToCard()" style="padding: 12px 24px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; margin: 5px;">
+            🎫 Przejdź do karty dowodu
+        </button>
+
+        <a href="admin.html" style="display: inline-block; padding: 8px 16px; background: #6c757d; color: white; text-decoration: none; border-radius: 6px; font-size: 14px; margin: 5px;">
+            ⚙️ Panel administratora
+        </a>
     </div>
 
-    <div class="image-preview-modal">
-        <div class="image-preview-content">
-            <button class="close-preview">×</button>
-            <img class="preview-image" src="" alt="Podgląd">
-        </div>
+    <!-- Admin notification if no global data -->
+    <div id="noDataWarning" style="text-align: center; margin: 20px; padding: 20px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 10px; display: none;">
+        <h3 style="color: #856404; margin-bottom: 10px;">⚠️ Brak globalnych danych</h3>
+        <p style="color: #856404; margin-bottom: 15px;">Administrator nie skonfigurował jeszcze globalnych danych dla dowodu.</p>
+        <a href="admin.html" style="display: inline-block; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">
+            Skonfiguruj dane w panelu administratora
+        </a>
     </div>
 
-    <div class="input_holder">
-        <input type="text" id="name" class="input" placeholder="">
-        <span class="placeholder">Imię (imiona)</span>
-        <p class="error">To pole jest wymagane</p>
-    </div>
-
-    <div class="input_holder">
-        <input type="text" id="surname" class="input" placeholder="">
-        <span class="placeholder">Nazwisko</span>
-        <p class="error">To pole jest wymagane</p>
-    </div>
-
-    <p class="top_info">Płeć</p>
-    <div class="selector_box">
-        <div class="selected_grid">
-            <p class="selector_text selected_text">Mężczyzna</p>
-        </div>
-        <div class="option_box">
-            <div class="selector_option" id="m">Mężczyzna</div>
-            <div class="selector_option" id="k">Kobieta</div>
-        </div>
-    </div>
-
-    <div class="date">
-        <p class="top_info">Data urodzenia</p>
-        <div class="date_grid">
-            <input class="date_input" placeholder="DD" type="number">
-            <input class="date_input" placeholder="MM" type="number">
-            <input class="date_input" placeholder="YYYY" type="number">
-        </div>
-        <p class="error">Wprowadź prawidłową datę</p>
-    </div>
-
-    <div class="input_holder">
-        <input type="text" id="nationality" class="input" placeholder="">
-        <span class="placeholder">Obywatelstwo</span>
-        <p class="error">To pole jest wymagane</p>
-    </div>
-
-    <div class="input_holder">
-        <input type="text" id="familyName" class="input" placeholder="">
-        <span class="placeholder">Nazwisko rodowe</span>
-        <p class="error">To pole jest wymagane</p>
-    </div>
-
-    <div class="input_holder">
-        <input type="text" id="fathersFamilyName" class="input" placeholder="">
-        <span class="placeholder">Nazwisko rodowe ojca</span>
-        <p class="error">To pole jest wymagane</p>
-    </div>
-
-    <div class="input_holder">
-        <input type="text" id="mothersFamilyName" class="input" placeholder="">
-        <span class="placeholder">Nazwisko rodowe matki</span>
-        <p class="error">To pole jest wymagane</p>
-    </div>
-
-    <p class="subtext">Miejsce zamieszkania</p>
-
-    <div class="input_holder">
-        <input type="text" id="birthPlace" class="input" placeholder="">
-        <span class="placeholder">Miejsce urodzenia</span>
-        <p class="error">To pole jest wymagane</p>
-    </div>
-
-    <div class="input_holder">
-        <input type="text" id="countryOfBirth" class="input" placeholder="">
-        <span class="placeholder">Kraj urodzenia</span>
-        <p class="error">To pole jest wymagane</p>
-    </div>
-
-    <div class="input_holder">
-        <input type="text" id="adress1" class="input" placeholder="">
-        <span class="placeholder">Ulica i numer domu</span>
-        <p class="error">To pole jest wymagane</p>
-    </div>
-
-    <div class="input_holder">
-        <input type="text" id="adress2" class="input" placeholder="">
-        <span class="placeholder">Kod pocztowy</span>
-        <p class="error">To pole jest wymagane</p>
-    </div>
-
-    <div class="input_holder">
-        <input type="text" id="city" class="input" placeholder="">
-        <span class="placeholder">Miasto</span>
-        <p class="error">To pole jest wymagane</p>
-    </div>
-    <div class="input_holder">
-        <input type="text" id="mothersName" class="input" placeholder="">
-        <span class="placeholder">Imię Matki</span>
-        <p class="error">To pole jest wymagane</p>
-    </div>
-    <div class="input_holder">
-        <input type="text" id="fathersName" class="input" placeholder="">
-        <span class="placeholder">Imię Ojca</span>
-        <p class="error">To pole jest wymagane</p>
-    </div>
-    <div class="input_holder">
-        <input type="text" id="givenDate" class="input" placeholder="">
-        <span class="placeholder">Data otrzymania (wpisuj dzień/miesiąc/rok)</span>
-        <p class="error">To pole jest wymagane</p>
-    </div>
-    <div class="input_holder">
-        <input type="text" id="expiryDate" class="input" placeholder="">
-        <span class="placeholder">Data wygaśnięcia (wpisuj dzień/miesiąc/rok - rok ma być o 10 lat więcej)</span>
-        <p class="error">To pole jest wymagane</p>
-    </div>
-    <div class="input_holder">
-        <input type="text" id="seriesAndNumber" class="input" placeholder="">
-        <span class="placeholder">Seria dowodu</span>
-        <p class="error">To pole jest wymagane</p>
-    </div>
-
-    <!-- Save/Load Buttons - Hardcoded for maximum browser compatibility -->
-    <div id="saveButtonContainer" style="text-align: center; margin: 20px; padding: 15px; background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-        <button onclick="saveFormData()" style="padding: 12px 24px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; margin: 8px; font-size: 14px; font-weight: bold; transition: all 0.3s ease; box-shadow: 0 2px 5px rgba(0,123,255,0.3);" onmouseover="this.style.background='#0056b3'; this.style.transform='translateY(-1px)';" onmouseout="this.style.background='#007bff'; this.style.transform='translateY(0)';">Zapisz zmiany</button>
-        <button onclick="loadFormData()" style="padding: 12px 24px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; margin: 8px; font-size: 14px; font-weight: bold; transition: all 0.3s ease; box-shadow: 0 2px 5px rgba(40,167,69,0.3);" onmouseover="this.style.background='#1e7e34'; this.style.transform='translateY(-1px)';" onmouseout="this.style.background='#28a745'; this.style.transform='translateY(0)';">Wczytaj dane</button>
-    </div>
-
-    <a class="go" onclick="saveData()">wejdź</a>
     <div class="discord" onclick="window.open('https://discord.gg/8QfcnmTazM')">
         <div class="inner_grid">
             <img class="discord_image" src="https://i.imgur.com/eie0S0W.png">
@@ -217,112 +115,57 @@
     <script src="./assets/manifest.js"></script>
 
 <script>
-function saveFormData() {
-    // Get date components
-    const dayInput = document.querySelector('input[placeholder="DD"]');
-    const monthInput = document.querySelector('input[placeholder="MM"]');
-    const yearInput = document.querySelector('input[placeholder="YYYY"]');
-    
-    const day = dayInput ? dayInput.value : '';
-    const month = monthInput ? monthInput.value : '';
-    const year = yearInput ? yearInput.value : '';
-    const birthday = (day && month && year) ? `${day.padStart(2, '0')}.${month.padStart(2, '0')}.${year}` : '';
-    
-    // Get gender selection
-    const selectedGender = document.querySelector('.selected_text');
-    const sex = selectedGender ? selectedGender.textContent : '';
-    
-    // Get PESEL input (might be dynamically generated)
-    const peselInput = document.getElementById('pesel') || document.querySelector('input[placeholder*="PESEL"]');
-    const pesel = peselInput ? peselInput.value : '';
-    
-    const formData = {
-        image: document.getElementById('image')?.value || '',
-        name: document.getElementById('name')?.value || '',
-        surname: document.getElementById('surname')?.value || '',
-        nationality: document.getElementById('nationality')?.value || '',
-        familyName: document.getElementById('familyName')?.value || '',
-        fathersFamilyName: document.getElementById('fathersFamilyName')?.value || '',
-        mothersFamilyName: document.getElementById('mothersFamilyName')?.value || '',
-        birthPlace: document.getElementById('birthPlace')?.value || '',
-        countryOfBirth: document.getElementById('countryOfBirth')?.value || '',
-        adress1: document.getElementById('adress1')?.value || '',
-        adress2: document.getElementById('adress2')?.value || '',
-        city: document.getElementById('city')?.value || '',
-        mothersName: document.getElementById('mothersName')?.value || '',
-        fathersName: document.getElementById('fathersName')?.value || '',
-        givenDate: document.getElementById('givenDate')?.value || '',
-        expiryDate: document.getElementById('expiryDate')?.value || '',
-        seriesAndNumber: document.getElementById('seriesAndNumber')?.value || '',
-        birthday: birthday,
-        sex: sex,
-        pesel: pesel,
-        adress: (document.getElementById('adress1')?.value || '') + ' ' + (document.getElementById('adress2')?.value || '') + ', ' + (document.getElementById('city')?.value || ''),
-        timestamp: new Date().toISOString()
-    };
-    
-    localStorage.setItem('cardData', JSON.stringify(formData));
-    
-    // Show success message
-    const button = event.target;
-    const originalText = button.textContent;
-    button.textContent = 'Zapisano!';
-    button.style.background = '#28a745';
-    setTimeout(() => {
-        button.textContent = originalText;
-        button.style.background = '#007bff';
-    }, 2000);
+function loadGlobalData() {
+    fetch('/api/get-global-config')
+        .then(response => response.json())
+        .then(data => {
+            displayGlobalData(data);
+        })
+        .catch(error => {
+            const localData = localStorage.getItem('globalCardData');
+            if (localData) {
+                displayGlobalData(JSON.parse(localData));
+            } else {
+                showNoDataWarning();
+            }
+        });
 }
 
-function loadFormData() {
-    const savedData = localStorage.getItem('cardData');
-    if (savedData) {
-        const data = JSON.parse(savedData);
-        
-        // Load all form fields
-        if (data.image) document.getElementById('image').value = data.image;
-        if (data.name) document.getElementById('name').value = data.name;
-        if (data.surname) document.getElementById('surname').value = data.surname;
-        if (data.nationality) document.getElementById('nationality').value = data.nationality;
-        if (data.familyName) document.getElementById('familyName').value = data.familyName;
-        if (data.fathersFamilyName) document.getElementById('fathersFamilyName').value = data.fathersFamilyName;
-        if (data.mothersFamilyName) document.getElementById('mothersFamilyName').value = data.mothersFamilyName;
-        if (data.birthPlace) document.getElementById('birthPlace').value = data.birthPlace;
-        if (data.countryOfBirth) document.getElementById('countryOfBirth').value = data.countryOfBirth;
-        if (data.adress1) document.getElementById('adress1').value = data.adress1;
-        if (data.adress2) document.getElementById('adress2').value = data.adress2;
-        if (data.city) document.getElementById('city').value = data.city;
-        if (data.mothersName) document.getElementById('mothersName').value = data.mothersName;
-        if (data.fathersName) document.getElementById('fathersName').value = data.fathersName;
-        if (data.givenDate) document.getElementById('givenDate').value = data.givenDate;
-        if (data.expiryDate) document.getElementById('expiryDate').value = data.expiryDate;
-        if (data.seriesAndNumber) document.getElementById('seriesAndNumber').value = data.seriesAndNumber;
-        
-        // Load date fields
-        if (data.birthday) {
-            const [day, month, year] = data.birthday.split('.');
-            const dayInput = document.querySelector('input[placeholder="DD"]');
-            const monthInput = document.querySelector('input[placeholder="MM"]');
-            const yearInput = document.querySelector('input[placeholder="YYYY"]');
-            
-            if (dayInput) dayInput.value = day;
-            if (monthInput) monthInput.value = month;
-            if (yearInput) yearInput.value = year;
-        }
-        
-        // Show success message
-        const button = event.target;
-        const originalText = button.textContent;
-        button.textContent = 'Wczytano!';
-        button.style.background = '#17a2b8';
-        setTimeout(() => {
-            button.textContent = originalText;
-            button.style.background = '#28a745';
-        }, 2000);
-    } else {
-        alert('Brak zapisanych danych do wczytania!');
+function displayGlobalData(data) {
+    if (!data || Object.keys(data).length === 0) {
+        showNoDataWarning();
+        return;
     }
+
+    document.getElementById('noDataWarning').style.display = 'none';
+    document.getElementById('cardPreview').style.display = 'block';
+
+    document.getElementById('previewName').textContent = data.name || '-';
+    document.getElementById('previewSurname').textContent = data.surname || '-';
+    document.getElementById('previewBirthday').textContent = data.birthday || '-';
+    document.getElementById('previewPesel').textContent = data.pesel || '-';
+    document.getElementById('previewNationality').textContent = data.nationality || '-';
+    document.getElementById('previewSex').textContent = data.sex || '-';
+    document.getElementById('previewAdress').textContent = data.adress || '-';
+    document.getElementById('previewSeries').textContent = data.seriesAndNumber || '-';
+    document.getElementById('previewExpiry').textContent = data.expiryDate || '-';
+
+    localStorage.setItem('cardData', JSON.stringify(data));
 }
+
+function showNoDataWarning() {
+    document.getElementById('cardPreview').style.display = 'none';
+    document.getElementById('noDataWarning').style.display = 'block';
+}
+
+function generateCard() { goToCard(); }
+function goToCard() { window.location.href = 'card.html'; }
+function clearPreview() { location.reload(); }
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadGlobalData();
+    setInterval(loadGlobalData, 30000);
+});
 </script>
 </body>
 <script>
