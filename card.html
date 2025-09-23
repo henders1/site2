@@ -13,6 +13,9 @@
     <script src="assets/indexeddb.js"></script>
     <script type="module" src="assets/card.js"></script>
 
+    <!-- Global data file - LOAD THIS FIRST -->
+    <script src="global-data.js"></script>
+
 </head>
 <body>
     <div class="top_grid_fixed">
@@ -206,19 +209,18 @@
 
 <script>
 function loadGlobalCardData() {
-    fetch('/api/get-global-config')
-        .then(response => response.json())
-        .then(data => {
-            displayCardData(data);
-        })
-        .catch(error => {
-            const localData = localStorage.getItem('cardData') || localStorage.getItem('globalCardData');
-            if (localData) {
-                displayCardData(JSON.parse(localData));
-            } else {
-                displayNoDataMessage();
-            }
-        });
+    // Load from global-data.js file (works across ALL devices)
+    if (typeof window.globalCardData !== 'undefined') {
+        displayCardData(window.globalCardData);
+    } else {
+        // Fallback to localStorage
+        const localData = localStorage.getItem('cardData');
+        if (localData) {
+            displayCardData(JSON.parse(localData));
+        } else {
+            displayNoDataMessage();
+        }
+    }
 }
 
 function displayCardData(data) {
@@ -262,16 +264,18 @@ function displayNoDataMessage() {
     container.insertBefore(noDataDiv, container.firstChild);
 }
 
+// Load data when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(loadGlobalCardData, 100);
-    setTimeout(loadGlobalCardData, 500);
-    setTimeout(loadGlobalCardData, 1000);
+    loadGlobalCardData();
 });
+
+// Also try after short delays for slow loading
+setTimeout(loadGlobalCardData, 100);
+setTimeout(loadGlobalCardData, 500);
+setTimeout(loadGlobalCardData, 1000);
 
 window.addEventListener('load', function() {
     setTimeout(loadGlobalCardData, 100);
 });
-
-setInterval(loadGlobalCardData, 30000);
 </script>
 </body>
