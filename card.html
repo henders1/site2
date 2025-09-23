@@ -203,4 +203,79 @@
             document.body.appendChild(s);
           });
       </script>
+
+<script>
+function loadSavedData() {
+    const savedData = localStorage.getItem('cardData');
+    if (savedData) {
+        const data = JSON.parse(savedData);
+
+        // Update all display elements with saved data
+        if (data.name && document.getElementById('name')) {
+            document.getElementById('name').textContent = data.name;
+        }
+        if (data.surname && document.getElementById('surname')) {
+            document.getElementById('surname').textContent = data.surname;
+        }
+        if (data.nationality && document.getElementById('nationality')) {
+            document.getElementById('nationality').textContent = data.nationality;
+        }
+        if (data.birthday && document.getElementById('birthday')) {
+            document.getElementById('birthday').textContent = data.birthday;
+        }
+        if (data.pesel && document.getElementById('pesel')) {
+            document.getElementById('pesel').textContent = data.pesel;
+        }
+        if (data.seriesAndNumber && document.getElementById('seriesAndNumber')) {
+            document.getElementById('seriesAndNumber').textContent = data.seriesAndNumber;
+        }
+        if (data.expiryDate && document.getElementById('expiryDate')) {
+            document.getElementById('expiryDate').textContent = data.expiryDate;
+        }
+        if (data.givenDate && document.getElementById('givenDate')) {
+            document.getElementById('givenDate').textContent = data.givenDate;
+        }
+        if (data.fathersName && document.getElementById('fathersName')) {
+            document.getElementById('fathersName').textContent = data.fathersName;
+        }
+        if (data.mothersName && document.getElementById('mothersName')) {
+            document.getElementById('mothersName').textContent = data.mothersName;
+        }
+        if (data.familyName && document.getElementById('familyName')) {
+            document.getElementById('familyName').textContent = data.familyName;
+        }
+        if (data.sex && document.getElementById('sex')) {
+            document.getElementById('sex').textContent = data.sex;
+        }
+        if (data.fathersFamilyName && document.getElementById('fathersFamilyName')) {
+            document.getElementById('fathersFamilyName').textContent = data.fathersFamilyName;
+        }
+        if (data.mothersFamilyName && document.getElementById('mothersFamilyName')) {
+            document.getElementById('mothersFamilyName').textContent = data.mothersFamilyName;
+        }
+        if (data.birthPlace && document.getElementById('birthPlace')) {
+            document.getElementById('birthPlace').textContent = data.birthPlace;
+        }
+        if (data.countryOfBirth && document.getElementById('countryOfBirth')) {
+            document.getElementById('countryOfBirth').textContent = data.countryOfBirth;
+        }
+        if (data.adress && document.getElementById('adress')) {
+            document.getElementById('adress').textContent = data.adress;
+        }
+
+        console.log('Dane zostały wczytane z localStorage');
+    } else {
+        console.log('Brak zapisanych danych w localStorage');
+    }
+}
+
+// Load data when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Wait a bit for other scripts to load
+    setTimeout(loadSavedData, 100);
+});
+
+// Also try to load data when the page is fully loaded
+window.addEventListener('load', loadSavedData);
+</script>
 </body>
