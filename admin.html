@@ -38,14 +38,12 @@
             <h1 class="admin-title">🔧 Panel Administratora</h1>
             <p class="admin-subtitle">Ustaw globalne dane dla wszystkich użytkowników</p>
         </div>
-        
         <div class="auth-section" id="authSection">
             <p style="margin-bottom: 15px; color: #666;">Wprowadź hasło administratora:</p>
             <input type="password" id="adminPassword" class="auth-input" placeholder="Hasło">
             <button onclick="authenticate()" class="auth-button">Zaloguj</button>
             <div id="authError" class="error-message"></div>
         </div>
-        
         <div class="settings-section" id="settingsSection">
             <form id="globalSettingsForm">
                 <div class="form-grid">
@@ -70,25 +68,20 @@
                     <div class="form-group"><label for="city">Miasto</label><input type="text" id="city" name="city"></div>
                     <div class="form-group full-width"><label for="image">Link do zdjęcia (Imgur)</label><input type="text" id="image" name="image"></div>
                 </div>
-                
                 <div class="action-buttons">
                     <button type="button" onclick="saveGlobalSettings()" class="save-button">💾 Zapisz ustawienia globalne</button>
                     <button type="button" onclick="previewCard()" class="preview-button">👁️ Podgląd karty</button>
                 </div>
-                
                 <div id="successMessage" class="success-message"></div>
                 <div id="errorMessage" class="error-message"></div>
             </form>
         </div>
     </div>
-    
     <script>
-        const ADMIN_PASSWORD = 'admin123'; // CHANGE THIS!
-        
+        const ADMIN_PASSWORD = 'admin123';
         function authenticate() {
             const password = document.getElementById('adminPassword').value;
             const errorDiv = document.getElementById('authError');
-            
             if (password === ADMIN_PASSWORD) {
                 document.getElementById('authSection').style.display = 'none';
                 document.getElementById('settingsSection').style.display = 'block';
@@ -98,7 +91,6 @@
                 errorDiv.textContent = 'Nieprawidłowe hasło!';
             }
         }
-        
         function loadCurrentSettings() {
             const globalData = localStorage.getItem('globalCardData');
             if (globalData) {
@@ -109,31 +101,24 @@
                 });
             }
         }
-        
         function saveGlobalSettings() {
             const form = document.getElementById('globalSettingsForm');
             const formData = new FormData(form);
             const globalData = {};
-            
             for (let [key, value] of formData.entries()) {
                 globalData[key] = value;
             }
-            
             globalData.adress = (globalData.adress1 || '') + ' ' + (globalData.adress2 || '') + ', ' + (globalData.city || '');
             globalData.timestamp = new Date().toISOString();
-            
             localStorage.setItem('globalCardData', JSON.stringify(globalData));
             showMessage('success', 'Ustawienia zostały zapisane globalnie dla wszystkich użytkowników!');
         }
-        
         function previewCard() {
             window.open('card.html', '_blank');
         }
-        
         function showMessage(type, text) {
             const successDiv = document.getElementById('successMessage');
             const errorDiv = document.getElementById('errorMessage');
-            
             if (type === 'success') {
                 successDiv.style.display = 'block';
                 successDiv.textContent = text;
@@ -143,13 +128,11 @@
                 errorDiv.textContent = text;
                 successDiv.style.display = 'none';
             }
-            
             setTimeout(() => {
                 successDiv.style.display = 'none';
                 errorDiv.style.display = 'none';
             }, 5000);
         }
-        
         document.getElementById('adminPassword').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') authenticate();
         });
