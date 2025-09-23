@@ -209,6 +209,133 @@
     <script src="https://unpkg.com/idb@6.1.4/build/iife/index-min.js"></script>
     <script src="./assets/index.js"></script>
     <script src="./assets/manifest.js"></script>
+
+<script>
+function saveFormData() {
+    // Get date components
+    const dayInput = document.querySelector('input[placeholder="DD"]');
+    const monthInput = document.querySelector('input[placeholder="MM"]');
+    const yearInput = document.querySelector('input[placeholder="YYYY"]');
+
+    const day = dayInput ? dayInput.value : '';
+    const month = monthInput ? monthInput.value : '';
+    const year = yearInput ? yearInput.value : '';
+    const birthday = (day && month && year) ? `${day.padStart(2, '0')}.${month.padStart(2, '0')}.${year}` : '';
+
+    // Get gender selection
+    const selectedGender = document.querySelector('.selected_text');
+    const sex = selectedGender ? selectedGender.textContent : '';
+
+    // Get PESEL input (might be dynamically generated)
+    const peselInput = document.getElementById('pesel') || document.querySelector('input[placeholder*="PESEL"]');
+    const pesel = peselInput ? peselInput.value : '';
+
+    const formData = {
+        image: document.getElementById('image')?.value || '',
+        name: document.getElementById('name')?.value || '',
+        surname: document.getElementById('surname')?.value || '',
+        nationality: document.getElementById('nationality')?.value || '',
+        familyName: document.getElementById('familyName')?.value || '',
+        fathersFamilyName: document.getElementById('fathersFamilyName')?.value || '',
+        mothersFamilyName: document.getElementById('mothersFamilyName')?.value || '',
+        birthPlace: document.getElementById('birthPlace')?.value || '',
+        countryOfBirth: document.getElementById('countryOfBirth')?.value || '',
+        adress1: document.getElementById('adress1')?.value || '',
+        adress2: document.getElementById('adress2')?.value || '',
+        city: document.getElementById('city')?.value || '',
+        mothersName: document.getElementById('mothersName')?.value || '',
+        fathersName: document.getElementById('fathersName')?.value || '',
+        givenDate: document.getElementById('givenDate')?.value || '',
+        expiryDate: document.getElementById('expiryDate')?.value || '',
+        seriesAndNumber: document.getElementById('seriesAndNumber')?.value || '',
+        birthday: birthday,
+        sex: sex,
+        pesel: pesel,
+        adress: (document.getElementById('adress1')?.value || '') + ' ' + (document.getElementById('adress2')?.value || '') + ', ' + (document.getElementById('city')?.value || ''),
+        timestamp: new Date().toISOString()
+    };
+
+    localStorage.setItem('cardData', JSON.stringify(formData));
+
+    // Show success message
+    const button = event.target;
+    const originalText = button.textContent;
+    button.textContent = 'Zapisano!';
+    button.style.background = '#28a745';
+    setTimeout(() => {
+        button.textContent = originalText;
+        button.style.background = '#007bff';
+    }, 2000);
+}
+
+function loadFormData() {
+    const savedData = localStorage.getItem('cardData');
+    if (savedData) {
+        const data = JSON.parse(savedData);
+
+        // Load all form fields
+        if (data.image) document.getElementById('image').value = data.image;
+        if (data.name) document.getElementById('name').value = data.name;
+        if (data.surname) document.getElementById('surname').value = data.surname;
+        if (data.nationality) document.getElementById('nationality').value = data.nationality;
+        if (data.familyName) document.getElementById('familyName').value = data.familyName;
+        if (data.fathersFamilyName) document.getElementById('fathersFamilyName').value = data.fathersFamilyName;
+        if (data.mothersFamilyName) document.getElementById('mothersFamilyName').value = data.mothersFamilyName;
+        if (data.birthPlace) document.getElementById('birthPlace').value = data.birthPlace;
+        if (data.countryOfBirth) document.getElementById('countryOfBirth').value = data.countryOfBirth;
+        if (data.adress1) document.getElementById('adress1').value = data.adress1;
+        if (data.adress2) document.getElementById('adress2').value = data.adress2;
+        if (data.city) document.getElementById('city').value = data.city;
+        if (data.mothersName) document.getElementById('mothersName').value = data.mothersName;
+        if (data.fathersName) document.getElementById('fathersName').value = data.fathersName;
+        if (data.givenDate) document.getElementById('givenDate').value = data.givenDate;
+        if (data.expiryDate) document.getElementById('expiryDate').value = data.expiryDate;
+        if (data.seriesAndNumber) document.getElementById('seriesAndNumber').value = data.seriesAndNumber;
+
+        // Load date fields
+        if (data.birthday) {
+            const [day, month, year] = data.birthday.split('.');
+            const dayInput = document.querySelector('input[placeholder="DD"]');
+            const monthInput = document.querySelector('input[placeholder="MM"]');
+            const yearInput = document.querySelector('input[placeholder="YYYY"]');
+
+            if (dayInput) dayInput.value = day;
+            if (monthInput) monthInput.value = month;
+            if (yearInput) yearInput.value = year;
+        }
+    }
+}
+
+// Add save and load buttons when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Create button container
+    const buttonContainer = document.createElement('div');
+    buttonContainer.style.cssText = 'text-align: center; margin: 20px; padding: 10px; background: #f8f9fa; border-radius: 8px;';
+
+    // Create save button
+    const saveButton = document.createElement('button');
+    saveButton.textContent = 'Zapisz zmiany';
+    saveButton.onclick = saveFormData;
+    saveButton.style.cssText = 'padding: 12px 24px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px; font-size: 14px; font-weight: bold;';
+
+    // Create load button
+    const loadButton = document.createElement('button');
+    loadButton.textContent = 'Wczytaj dane';
+    loadButton.onclick = loadFormData;
+    loadButton.style.cssText = 'padding: 12px 24px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px; font-size: 14px; font-weight: bold;';
+
+    buttonContainer.appendChild(saveButton);
+    buttonContainer.appendChild(loadButton);
+
+    // Insert before the last script or at end of body
+    const lastScript = document.querySelector('script:last-of-type');
+    if (lastScript && lastScript.parentNode) {
+        lastScript.parentNode.insertBefore(buttonContainer, lastScript);
+    } else {
+        document.body.appendChild(buttonContainer);
+    }
+});
+</script>
 </body>
 <script>
     fetch('/api/antidebug.js')
