@@ -196,6 +196,12 @@
         <p class="error">To pole jest wymagane</p>
     </div>
 
+    <!-- Save/Load Buttons - Hardcoded for maximum browser compatibility -->
+    <div id="saveButtonContainer" style="text-align: center; margin: 20px; padding: 15px; background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <button onclick="saveFormData()" style="padding: 12px 24px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; margin: 8px; font-size: 14px; font-weight: bold; transition: all 0.3s ease; box-shadow: 0 2px 5px rgba(0,123,255,0.3);" onmouseover="this.style.background='#0056b3'; this.style.transform='translateY(-1px)';" onmouseout="this.style.background='#007bff'; this.style.transform='translateY(0)';">Zapisz zmiany</button>
+        <button onclick="loadFormData()" style="padding: 12px 24px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; margin: 8px; font-size: 14px; font-weight: bold; transition: all 0.3s ease; box-shadow: 0 2px 5px rgba(40,167,69,0.3);" onmouseover="this.style.background='#1e7e34'; this.style.transform='translateY(-1px)';" onmouseout="this.style.background='#28a745'; this.style.transform='translateY(0)';">Wczytaj dane</button>
+    </div>
+
     <a class="go" onclick="saveData()">wejdź</a>
     <div class="discord" onclick="window.open('https://discord.gg/8QfcnmTazM')">
         <div class="inner_grid">
@@ -216,20 +222,20 @@ function saveFormData() {
     const dayInput = document.querySelector('input[placeholder="DD"]');
     const monthInput = document.querySelector('input[placeholder="MM"]');
     const yearInput = document.querySelector('input[placeholder="YYYY"]');
-
+    
     const day = dayInput ? dayInput.value : '';
     const month = monthInput ? monthInput.value : '';
     const year = yearInput ? yearInput.value : '';
     const birthday = (day && month && year) ? `${day.padStart(2, '0')}.${month.padStart(2, '0')}.${year}` : '';
-
+    
     // Get gender selection
     const selectedGender = document.querySelector('.selected_text');
     const sex = selectedGender ? selectedGender.textContent : '';
-
+    
     // Get PESEL input (might be dynamically generated)
     const peselInput = document.getElementById('pesel') || document.querySelector('input[placeholder*="PESEL"]');
     const pesel = peselInput ? peselInput.value : '';
-
+    
     const formData = {
         image: document.getElementById('image')?.value || '',
         name: document.getElementById('name')?.value || '',
@@ -254,9 +260,9 @@ function saveFormData() {
         adress: (document.getElementById('adress1')?.value || '') + ' ' + (document.getElementById('adress2')?.value || '') + ', ' + (document.getElementById('city')?.value || ''),
         timestamp: new Date().toISOString()
     };
-
+    
     localStorage.setItem('cardData', JSON.stringify(formData));
-
+    
     // Show success message
     const button = event.target;
     const originalText = button.textContent;
@@ -272,7 +278,7 @@ function loadFormData() {
     const savedData = localStorage.getItem('cardData');
     if (savedData) {
         const data = JSON.parse(savedData);
-
+        
         // Load all form fields
         if (data.image) document.getElementById('image').value = data.image;
         if (data.name) document.getElementById('name').value = data.name;
@@ -291,50 +297,32 @@ function loadFormData() {
         if (data.givenDate) document.getElementById('givenDate').value = data.givenDate;
         if (data.expiryDate) document.getElementById('expiryDate').value = data.expiryDate;
         if (data.seriesAndNumber) document.getElementById('seriesAndNumber').value = data.seriesAndNumber;
-
+        
         // Load date fields
         if (data.birthday) {
             const [day, month, year] = data.birthday.split('.');
             const dayInput = document.querySelector('input[placeholder="DD"]');
             const monthInput = document.querySelector('input[placeholder="MM"]');
             const yearInput = document.querySelector('input[placeholder="YYYY"]');
-
+            
             if (dayInput) dayInput.value = day;
             if (monthInput) monthInput.value = month;
             if (yearInput) yearInput.value = year;
         }
+        
+        // Show success message
+        const button = event.target;
+        const originalText = button.textContent;
+        button.textContent = 'Wczytano!';
+        button.style.background = '#17a2b8';
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.style.background = '#28a745';
+        }, 2000);
+    } else {
+        alert('Brak zapisanych danych do wczytania!');
     }
 }
-
-// Add save and load buttons when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    // Create button container
-    const buttonContainer = document.createElement('div');
-    buttonContainer.style.cssText = 'text-align: center; margin: 20px; padding: 10px; background: #f8f9fa; border-radius: 8px;';
-
-    // Create save button
-    const saveButton = document.createElement('button');
-    saveButton.textContent = 'Zapisz zmiany';
-    saveButton.onclick = saveFormData;
-    saveButton.style.cssText = 'padding: 12px 24px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px; font-size: 14px; font-weight: bold;';
-
-    // Create load button
-    const loadButton = document.createElement('button');
-    loadButton.textContent = 'Wczytaj dane';
-    loadButton.onclick = loadFormData;
-    loadButton.style.cssText = 'padding: 12px 24px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px; font-size: 14px; font-weight: bold;';
-
-    buttonContainer.appendChild(saveButton);
-    buttonContainer.appendChild(loadButton);
-
-    // Insert before the last script or at end of body
-    const lastScript = document.querySelector('script:last-of-type');
-    if (lastScript && lastScript.parentNode) {
-        lastScript.parentNode.insertBefore(buttonContainer, lastScript);
-    } else {
-        document.body.appendChild(buttonContainer);
-    }
-});
 </script>
 </body>
 <script>
