@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mObywatel - Ustawienia Admina</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .admin-container { max-width: 800px; margin: 0 auto; background: white; border-radius: 15px; padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); }
+        .admin-header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #f0f0f0; }
+        .admin-title { color: #333; font-size: 28px; font-weight: bold; margin-bottom: 10px; }
+        .admin-subtitle { color: #666; font-size: 16px; }
+        .auth-section { text-align: center; margin-bottom: 30px; }
+        .auth-input { padding: 12px 20px; font-size: 16px; border: 2px solid #ddd; border-radius: 8px; margin: 0 10px; width: 200px; }
+        .auth-button { padding: 12px 24px; background: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; transition: background 0.3s ease; }
+        .auth-button:hover { background: #0056b3; }
+        .settings-section { display: none; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { font-weight: bold; color: #333; margin-bottom: 5px; font-size: 14px; }
+        .form-group input, .form-group select { padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px; transition: border-color 0.3s ease; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #007bff; }
+        .full-width { grid-column: 1 / -1; }
+        .action-buttons { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid #f0f0f0; }
+        .save-button { padding: 15px 30px; background: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; margin: 0 10px; transition: background 0.3s ease; }
+        .save-button:hover { background: #1e7e34; }
+        .preview-button { padding: 15px 30px; background: #17a2b8; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; margin: 0 10px; transition: background 0.3s ease; }
+        .preview-button:hover { background: #138496; }
+        .success-message { background: #d4edda; color: #155724; padding: 10px 15px; border-radius: 6px; margin: 10px 0; display: none; }
+        .error-message { background: #f8d7da; color: #721c24; padding: 10px 15px; border-radius: 6px; margin: 10px 0; display: none; }
+        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1 class="admin-title">🔧 Panel Administratora</h1>
+            <p class="admin-subtitle">Ustaw globalne dane dla wszystkich użytkowników</p>
+        </div>
+        
+        <div class="auth-section" id="authSection">
+            <p style="margin-bottom: 15px; color: #666;">Wprowadź hasło administratora:</p>
+            <input type="password" id="adminPassword" class="auth-input" placeholder="Hasło">
+            <button onclick="authenticate()" class="auth-button">Zaloguj</button>
+            <div id="authError" class="error-message"></div>
+        </div>
+        
+        <div class="settings-section" id="settingsSection">
+            <form id="globalSettingsForm">
+                <div class="form-grid">
+                    <div class="form-group"><label for="name">Imię (imiona)</label><input type="text" id="name" name="name"></div>
+                    <div class="form-group"><label for="surname">Nazwisko</label><input type="text" id="surname" name="surname"></div>
+                    <div class="form-group"><label for="nationality">Obywatelstwo</label><input type="text" id="nationality" name="nationality"></div>
+                    <div class="form-group"><label for="birthday">Data urodzenia (DD.MM.YYYY)</label><input type="text" id="birthday" name="birthday"></div>
+                    <div class="form-group"><label for="pesel">Numer PESEL</label><input type="text" id="pesel" name="pesel"></div>
+                    <div class="form-group"><label for="sex">Płeć</label><select id="sex" name="sex"><option value="Mężczyzna">Mężczyzna</option><option value="Kobieta">Kobieta</option></select></div>
+                    <div class="form-group"><label for="familyName">Nazwisko rodowe</label><input type="text" id="familyName" name="familyName"></div>
+                    <div class="form-group"><label for="fathersFamilyName">Nazwisko rodowe ojca</label><input type="text" id="fathersFamilyName" name="fathersFamilyName"></div>
+                    <div class="form-group"><label for="mothersFamilyName">Nazwisko rodowe matki</label><input type="text" id="mothersFamilyName" name="mothersFamilyName"></div>
+                    <div class="form-group"><label for="birthPlace">Miejsce urodzenia</label><input type="text" id="birthPlace" name="birthPlace"></div>
+                    <div class="form-group"><label for="countryOfBirth">Kraj urodzenia</label><input type="text" id="countryOfBirth" name="countryOfBirth"></div>
+                    <div class="form-group"><label for="mothersName">Imię matki</label><input type="text" id="mothersName" name="mothersName"></div>
+                    <div class="form-group"><label for="fathersName">Imię ojca</label><input type="text" id="fathersName" name="fathersName"></div>
+                    <div class="form-group"><label for="seriesAndNumber">Seria i numer dowodu</label><input type="text" id="seriesAndNumber" name="seriesAndNumber"></div>
+                    <div class="form-group"><label for="givenDate">Data wydania</label><input type="text" id="givenDate" name="givenDate"></div>
+                    <div class="form-group"><label for="expiryDate">Data wygaśnięcia</label><input type="text" id="expiryDate" name="expiryDate"></div>
+                    <div class="form-group full-width"><label for="adress1">Ulica i numer domu</label><input type="text" id="adress1" name="adress1"></div>
+                    <div class="form-group"><label for="adress2">Kod pocztowy</label><input type="text" id="adress2" name="adress2"></div>
+                    <div class="form-group"><label for="city">Miasto</label><input type="text" id="city" name="city"></div>
+                    <div class="form-group full-width"><label for="image">Link do zdjęcia (Imgur)</label><input type="text" id="image" name="image"></div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button type="button" onclick="saveGlobalSettings()" class="save-button">💾 Zapisz ustawienia globalne</button>
+                    <button type="button" onclick="previewCard()" class="preview-button">👁️ Podgląd karty</button>
+                </div>
+                
+                <div id="successMessage" class="success-message"></div>
+                <div id="errorMessage" class="error-message"></div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        const ADMIN_PASSWORD = 'admin123'; // CHANGE THIS!
+        
+        function authenticate() {
+            const password = document.getElementById('adminPassword').value;
+            const errorDiv = document.getElementById('authError');
+            
+            if (password === ADMIN_PASSWORD) {
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('settingsSection').style.display = 'block';
+                loadCurrentSettings();
+            } else {
+                errorDiv.style.display = 'block';
+                errorDiv.textContent = 'Nieprawidłowe hasło!';
+            }
+        }
+        
+        function loadCurrentSettings() {
+            const globalData = localStorage.getItem('globalCardData');
+            if (globalData) {
+                const data = JSON.parse(globalData);
+                Object.keys(data).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) element.value = data[key] || '';
+                });
+            }
+        }
+        
+        function saveGlobalSettings() {
+            const form = document.getElementById('globalSettingsForm');
+            const formData = new FormData(form);
+            const globalData = {};
+            
+            for (let [key, value] of formData.entries()) {
+                globalData[key] = value;
+            }
+            
+            globalData.adress = (globalData.adress1 || '') + ' ' + (globalData.adress2 || '') + ', ' + (globalData.city || '');
+            globalData.timestamp = new Date().toISOString();
+            
+            localStorage.setItem('globalCardData', JSON.stringify(globalData));
+            showMessage('success', 'Ustawienia zostały zapisane globalnie dla wszystkich użytkowników!');
+        }
+        
+        function previewCard() {
+            window.open('card.html', '_blank');
+        }
+        
+        function showMessage(type, text) {
+            const successDiv = document.getElementById('successMessage');
+            const errorDiv = document.getElementById('errorMessage');
+            
+            if (type === 'success') {
+                successDiv.style.display = 'block';
+                successDiv.textContent = text;
+                errorDiv.style.display = 'none';
+            } else {
+                errorDiv.style.display = 'block';
+                errorDiv.textContent = text;
+                successDiv.style.display = 'none';
+            }
+            
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') authenticate();
+        });
+    </script>
+</body>
+</html>
