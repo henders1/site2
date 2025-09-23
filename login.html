@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8" />
+<title>Logowanie</title>
+<link rel="stylesheet" href="assets/index.css" />
+<style>
+  body {
+    margin: 0;
+    font-family: sans-serif;
+  }
+  .login-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #024A94, #0367c4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .login-container {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  }
+  .login-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 25px;
+  }
+  .login-logo img {
+    width: 60px;
+    margin-right: 15px;
+  }
+  .login-logo span {
+    font-size: 32px;
+    font-weight: bold;
+    color: #024A94;
+  }
+  .login-welcome {
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .login-box label {
+    display: block;
+    margin-bottom: 8px;
+    color: #666;
+  }
+  .login-input {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    margin-bottom: 10px;
+  }
+  .login-btn {
+    background: #024A94;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    width: 100%;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .login-btn:hover {
+    background: #0367c4;
+  }
+  .error-message {
+    display: none;
+    color: #dc3545;
+    background: #fff1f1;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-top: 10px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+  <div class="login-overlay">
+    <div class="login-container">
+      <div class="login-logo">
+        <img src="assets/images/2137.jpg" alt="Logo" />
+        <span>mObywatel</span>
+      </div>
+      <div class="login-welcome">Dzień dobry!</div>
+      <div class="login-box">
+        <label for="password">Hasło</label>
+        <input type="password" id="password" class="login-input" />
+        <p id="error" class="error-message">Nieprawidłowe hasło</p>
+        <button class="login-btn" onclick="checkPassword()">Zaloguj</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function checkPassword() {
+      const passwordInput = document.getElementById('password').value;
+      const errorMessage = document.getElementById('error');
+      if (passwordInput === '123') {
+        errorMessage.style.display = 'none';
+        window.location.href = 'home.html';
+      } else {
+        errorMessage.style.display = 'block';
+      }
+    }
+  </script>
+</body>
+</html>
