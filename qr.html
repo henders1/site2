@@ -1,23 +1,20 @@
-<!DOCTYPE html>
-<html lang="pl">
 <head>
-  <script type="module" src="assets/auth-check.js"></script>
-    <meta charset="UTF-8">
     <title>mObywatel</title>
-    <meta name="viewport" content="width=device-width, initial-scale=0.8, user-scalable=no">
-
-    <link rel="stylesheet" href="assets/qr.css">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="assets/card.css?v=1.2">
     <link rel="stylesheet" href="assets/main.css">
+    <link rel="icon" type="image/x-icon" href="assets/images/2137.jpg">
+    <link rel="apple-touch-icon" href="assets/images/2137.jpg">
+    <link rel="shortcut icon" href="assets/images/2137.jpg">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width, initial-scale=0.8, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
 
-    <!-- Biblioteki -->
-    <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
-
-    <!-- Twój skrypt -->
-    <script defer src="assets/main.js"></script>
+    <!-- LOAD DATA FROM data.js -->
+    <script src="data.js"></script>
 
     <style>
-    /* Fix all QR page icons using your SVG files */
+    /* Override CSS to use your SVG files for all icons */
     .bottom_element_image {
         background-size: contain;
         background-repeat: no-repeat;
@@ -28,7 +25,7 @@
         background-image: url('assets/images/coi_common_ui_ic_mobywatel_logo.svg');
     }
 
-    .bottom_element_image.documents {
+    .bottom_element_image.documents_open {
         background-image: url('assets/images/coi_common_ui_ic_document_id.svg');
     }
 
@@ -44,184 +41,490 @@
         background-image: url('assets/images/coi_common_ui_ic_help.svg');
     }
 
-    /* Fix QR action icons */
-    .qr_grid_image {
-        background-size: contain;
-        background-repeat: no-repeat;
-        background-position: center;
+    /* Make additional data section expandable */
+    .info_holder {
+        cursor: pointer;
+        transition: all 0.3s ease;
     }
 
-    .qr_image.scan {
-        background-image: url('assets/images/da025_ticket.svg');
+    .info_holder:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
     }
 
-    .qr_image.show {
-        background-image: url('assets/images/coi_common_ui_ic_document_id.svg');
+    .additional_holder {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.5s ease-in-out, opacity 0.3s ease;
+        opacity: 0;
+    }
+
+    .additional_holder.expanded {
+        max-height: 1000px;
+        opacity: 1;
+        margin-top: 20px;
+    }
+
+    .action_arrow {
+        transition: transform 0.3s ease;
+    }
+
+    .action_arrow.rotated {
+        transform: rotate(90deg);
+    }
+
+    /* Improved styling for additional data */
+    .additional_grid {
+        padding: 15px 0;
+        border-bottom: 1px solid #f0f0f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .additional_grid:last-child {
+        border-bottom: none;
+    }
+
+    .additional_title {
+        font-size: 14px;
+        color: #666;
+        margin: 0;
+        flex: 1;
+        padding-right: 10px;
+    }
+
+    .additional_subtitle {
+        font-size: 16px;
+        font-weight: 600;
+        color: #000;
+        margin: 0;
+        text-align: right;
+        flex: 1;
+        word-break: break-word;
+    }
+
+    /* Animation for expansion */
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .additional_grid {
+        animation: slideIn 0.3s ease-out;
+    }
+
+    /* Make bottom navigation clickable */
+    .bottom_element_grid {
+        cursor: pointer;
+        transition: opacity 0.2s ease;
+    }
+
+    .bottom_element_grid:hover {
+        opacity: 0.7;
     }
     </style>
+
 </head>
-<body oncontextmenu="return false;">
-
-  <div class="bottom_bar">
-    <div class="bottom_bar_grid">
-      <div class="bottom_element_grid" send="home">
-        <div class="bottom_element_image home"></div>
-        <p class="bottom_element_text">Pulpit</p>
-      </div>
-      <div class="bottom_element_grid" send="documents">
-        <div class="bottom_element_image documents"></div>
-        <p class="bottom_element_text">Dokumenty</p>
-      </div>
-      <div class="bottom_element_grid" send="services">
-        <div class="bottom_element_image services"></div>
-        <p class="bottom_element_text">Usługi</p>
-      </div>
-      <div class="bottom_element_grid" send="qr">
-        <div class="bottom_element_image qr"></div>
-        <p class="bottom_element_text open">Kod QR</p>
-      </div>
-      <div class="bottom_element_grid" send="more">
-        <div class="bottom_element_image more"></div>
-        <p class="bottom_element_text">Więcej</p>
-      </div>
+<body>
+    <div class="top_grid_fixed">
+        <div class="action_grid_fixed">
+            <img src="assets/images/ic_arrow_forward_gray.svg" class="back_img_fixed">
+            <p onclick="goBack()" class="back_text_fixed">Wróć</p>
+        </div>
+        <p class="title_text_fixed">mDowód</p>
+        <img src="assets/images/coi_common_ui_ic_help.svg" class="help_img_fixed">
     </div>
-  </div>
 
-  <div class="container">
-    <div class="qr_main_grid">
-      <div class="qr_title_grid">
-        <h1 class="qr_title">Kod QR</h1>
-        <p class="qr_subtitle">Wybierz, co chcesz zrobić</p>
-      </div>
+    <!-- BOTTOM BAR WITH WORKING SVG ICONS -->
+    <div class="bottom_bar">
+        <div class="bottom_bar_grid">
+            <div class="bottom_element_grid" onclick="goToHome()">
+                <div class="bottom_element_image home"></div>
+                <p class="bottom_element_text">Pulpit</p>
+            </div>
+            <div class="bottom_element_grid" onclick="goToDocuments()">
+                <div class="bottom_element_image documents_open"></div>
+                <p class="bottom_element_text open">Dokumenty</p>
+            </div>
+            <div class="bottom_element_grid" onclick="goToServices()">
+                <div class="bottom_element_image services"></div>
+                <p class="bottom_element_text">Usługi</p>
+            </div>
+            <div class="bottom_element_grid" onclick="goToQR()">
+                <div class="bottom_element_image qr"></div>
+                <p class="bottom_element_text">Kod QR</p>
+            </div>
+            <div class="bottom_element_grid" onclick="goToMore()">
+                <div class="bottom_element_image more"></div>
+                <p class="bottom_element_text">Więcej</p>
+            </div>
+        </div>
+    </div>
 
-      <div class="qr_grid">
-        <div class="qr_grid_element" onclick="openQRScanner()">
-          <div class="qr_grid_image">
-            <div class="qr_image scan"></div>
-          </div>
-          <div class="qr_grid_content">
-            <h2 class="qr_grid_title">Zeskanuj kod QR</h2>
-            <p class="qr_grid_desc">Zaloguj się lub potwierdź swoje dane.</p>
-          </div>
-          <img src="assets/images/coi_common_ui_ic_help.svg" class="qr_grid_arrow">
+    <div class="container">
+        <p class="time_text" id="time"></p>
+        <p id="date" style="display: none;"></p>
+        <div class="id_image_data">
+            <img draggable="false" class="id_image" src="assets/images/mid_background_main.webp">
+            <div class="inset">
+
+            </div>
+            <div class="id_own_image"></div>
+            <img draggable="false" src="https://i.imgur.com/rriU3Zp.gif" class="flag_video">
+            <img draggable="false" src="https://i.imgur.com/PF3ac4i.gif" class="eagle_video">
+            <p class="eagle_text">Rzeczpospolita<br>Polska</p>
+            <div class="id_data_grid">
+                <div class="data_holder">
+                    <p class="data_title firstname" id="name">Jan</p>
+                    <p class="data_value">Imię (imiona)</p>
+                </div>
+                <div class="data_holder">
+                    <p class="data_title surname" id="surname">Kowalski</p>
+                    <p class="data_value">Nazwisko</p>
+                </div>
+                <div class="data_holder">
+                    <p class="data_title" id="nationality">polskie</p>
+                    <p class="data_value">Obywatelstwo</p>
+                </div>
+                <div class="data_holder">
+                    <p class="data_title" id="birthday">01.01.1990</p>
+                    <p class="data_value">Data urodzenia</p>
+                </div>
+                <div class="data_holder">
+                    <p class="data_title" id="pesel">90010112345</p>
+                    <p class="data_value">Numer PESEL</p>
+                </div>
+            </div>
+        </div>
+        <div class="id_bottom">
+            <div class="bottom_grid">
+                <img class="bottom_image" src="assets/images/checkmark.svg">
+                <p class="bottom_text" style="color: #317C26; font-weight: 600; font-size: 18px; margin-left: 20px;">Dokument ważny</p>
+            </div>
+        </div>
+        <div class="under_container">
+            <div class="under_grid">
+                <div class="under_icon" onclick="showInfo('qr')">
+                    <div class="under_image_circle">
+                        <img class="under_image" src="assets/images/da025_ticket.svg">
+                    </div>
+                    <p class="under_text">Potwierdź swoje dane</p>
+                </div>
+                <div class="under_icon" onclick="showInfo('document')">
+                    <div class="under_image_circle">
+                        <img class="under_image" src="assets/images/coi_common_ui_ic_document_id.svg">
+                    </div>
+                    <p class="under_text">Dane dowodu osobistego</p>
+                </div>
+                <div class="under_icon" onclick="showInfo('pesel')">
+                    <div class="under_image_circle">
+                        <img class="under_image" src="assets/images/da008_zastrzez_pesel.svg">
+                    </div>
+                    <p class="under_text">Zastrzeż PESEL</p>
+                </div>
+                <div class="under_icon" onclick="showInfo('shortcuts')">
+                    <div class="under_image_circle">
+                        <img class="under_image" src="assets/images/coi_common_ui_ic_help.svg">
+                    </div>
+                    <p class="under_text">Pozostałe skróty</p>
+                </div>
+            </div>
+        </div>
+        <div class="confirm_info">
+            <div class="confirm_box">
+                <p class="box_top">Seria i numer</p>
+                <p class="box_value box_highlight" id="seriesAndNumber">ABC123456</p>
+                <button class="main_button" onclick="copyToClipboard('seriesAndNumber')">Kopiuj</button>
+            </div>
+            <div class="confirm_box">
+                <p class="box_top">Termin ważności</p>
+                <p class="box_value" id="expiryDate">15.06.2034</p>
+            </div>
+            <div class="confirm_box">
+                <p class="box_top">Data wydania</p>
+                <p class="box_value" id="givenDate">15.06.2024</p>
+            </div>
+            <div class="confirm_box">
+                <p class="box_top">Imię ojca</p>
+                <p class="box_value" id="fathersName">Piotr</p>
+            </div>
+            <div class="confirm_box" style="border: none;">
+                <p class="box_top">Imię matki</p>
+                <p class="box_value" id="mothersName">Anna</p>
+            </div>
         </div>
 
-        <div class="qr_grid_element" onclick="showQRCode()">
-          <div class="qr_grid_image">
-            <div class="qr_image show"></div>
-          </div>
-          <div class="qr_grid_content">
-            <h2 class="qr_grid_title">Pokaż kod QR</h2>
-            <p class="qr_grid_desc">Sprawdź dokument innej osoby.</p>
-          </div>
-          <img src="assets/images/coi_common_ui_ic_help.svg" class="qr_grid_arrow">
+        <!-- EXPANDABLE ADDITIONAL DATA SECTION -->
+        <div class="other_grid">
+            <div class="bottom_holder info_holder" onclick="toggleAdditionalData()">
+                <div class="bottom_grid">
+                    <p class="bottom_text" style="color: #1f2125; margin-bottom: 0;">Twoje dodatkowe dane</p>
+                </div>
+                <img class="action_arrow" src="assets/images/ic_arrow_forward_Dgray.svg" id="additionalDataArrow">
+
+                <!-- THIS SECTION NOW EXPANDS/COLLAPSES -->
+                <div class="additional_holder" id="additionalDataContainer">
+                    <div class="additional_grid">
+                        <p class="additional_title">Nazwisko rodowe</p>
+                        <p class="additional_subtitle" id="familyName">Kowalski</p>
+                    </div>
+                    <div class="additional_grid">
+                        <p class="additional_title">Płeć</p>
+                        <p class="additional_subtitle" id="sex">Mężczyzna</p>
+                    </div>
+                    <div class="additional_grid">
+                        <p class="additional_title">Nazwisko rodowe ojca</p>
+                        <p class="additional_subtitle" id="fathersFamilyName">Kowalski</p>
+                    </div>
+                    <div class="additional_grid">
+                        <p class="additional_title">Nazwisko rodowe matki</p>
+                        <p class="additional_subtitle" id="mothersFamilyName">Nowak</p>
+                    </div>
+                    <div class="additional_grid">
+                        <p class="additional_title">Miejsce urodzenia</p>
+                        <p class="additional_subtitle" id="birthPlace">Warszawa</p>
+                    </div>
+                    <div class="additional_grid">
+                        <p class="additional_title">Kraj urodzenia</p>
+                        <p class="additional_subtitle" id="countryOfBirth">Polska</p>
+                    </div>
+                    <div class="additional_grid">
+                        <p class="additional_title">Adres zameldowania na pobyt stały</p>
+                        <p class="additional_subtitle" id="adress">ul. Przykładowa 123, 00-001 Warszawa</p>
+                    </div>
+                    <div class="additional_grid" style="border-bottom: none;">
+                        <p class="additional_title">Data zameldowania na pobyt stały</p>
+                        <p class="additional_subtitle home_date" id="registrationDate">01.01.2020</p>
+                    </div>
+                </div>
+            </div>
+        </div>        
+        <div class="bottom_holder" style="height: 90px; margin-bottom: 120px;">
+            <div class="bottom_update">
+                <div class="bottom_update_grid">
+                    <p class="bottom_update_text" style="margin-left: 0px;">Ostatnia aktualizacja</p>
+                    <p class="bottom_update_value" style="margin-left: 0px;">Dzisiaj</p>
+                </div>
+                <button class="main_button update" onclick="updateCard()">Aktualizuj</button>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-
-  <!-- QR Scanner Modal -->
-  <div id="qr-scanner-modal" style="display: none;">
-    <div id="qr-scanner-content">
-      <video id="qr-video" autoplay></video>
-      <canvas id="qr-canvas" style="display: none;"></canvas>
-      <button onclick="closeQRScanner()">Zamknij</button>
-    </div>
-  </div>
-
-  <!-- QR Display Modal -->
-  <div id="qr-display-modal" style="display: none;">
-    <div id="qr-display-content">
-      <div id="qr-code-container"></div>
-      <button onclick="closeQRDisplay()">Zamknij</button>
-    </div>
-  </div>
 
 <script>
-// QR Scanner functionality
-function openQRScanner() {
-    document.getElementById('qr-scanner-modal').style.display = 'block';
-    startQRScanner();
+// State for additional data expansion
+let additionalDataExpanded = false;
+
+// Toggle additional data visibility
+function toggleAdditionalData() {
+    const container = document.getElementById('additionalDataContainer');
+    const arrow = document.getElementById('additionalDataArrow');
+
+    additionalDataExpanded = !additionalDataExpanded;
+
+    if (additionalDataExpanded) {
+        container.classList.add('expanded');
+        arrow.classList.add('rotated');
+        showNotification('📋 Pokazano dodatkowe dane');
+    } else {
+        container.classList.remove('expanded');
+        arrow.classList.remove('rotated');
+        showNotification('📋 Ukryto dodatkowe dane');
+    }
 }
 
-function closeQRScanner() {
-    document.getElementById('qr-scanner-modal').style.display = 'none';
-    stopQRScanner();
-}
+// Load card data from data.js - no authentication required
+function loadCardData() {
+    try {
+        if (typeof window.cardData !== 'undefined' && window.cardData) {
+            const data = window.cardData;
 
-function startQRScanner() {
-    const video = document.getElementById('qr-video');
-    const canvas = document.getElementById('qr-canvas');
-    const context = canvas.getContext('2d');
-
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-        .then(stream => {
-            video.srcObject = stream;
-            video.addEventListener('loadedmetadata', () => {
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                scanQRCode();
+            // Update all fields including additional data
+            Object.keys(data).forEach(key => {
+                const element = document.getElementById(key);
+                if (element && data[key]) {
+                    element.textContent = data[key];
+                }
             });
-        })
-        .catch(err => {
-            console.error('Error accessing camera:', err);
-            alert('Nie można uzyskać dostępu do kamery');
-        });
 
-    function scanQRCode() {
-        if (video.readyState === video.HAVE_ENOUGH_DATA) {
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-            const code = jsQR(imageData.data, imageData.width, imageData.height);
-
-            if (code) {
-                alert('QR Code scanned: ' + code.data);
-                closeQRScanner();
-                return;
+            // Set photo if available
+            if (data.image) {
+                const photoElement = document.querySelector('.id_own_image');
+                if (photoElement) {
+                    photoElement.style.backgroundImage = `url(${data.image})`;
+                    photoElement.style.backgroundSize = 'cover';
+                    photoElement.style.backgroundPosition = 'center';
+                }
             }
+
+            console.log('✅ Card loaded with expandable additional data');
         }
-        requestAnimationFrame(scanQRCode);
+    } catch (error) {
+        console.log('Using default data:', error);
     }
 }
 
-function stopQRScanner() {
-    const video = document.getElementById('qr-video');
-    if (video.srcObject) {
-        video.srcObject.getTracks().forEach(track => track.stop());
+// Navigation functions
+function goBack() {
+    if (document.referrer && document.referrer.includes(window.location.origin)) {
+        window.history.back();
+    } else {
+        try {
+            window.location.href = 'home.html';
+        } catch (e) {
+            window.location.reload();
+        }
     }
 }
 
-// QR Display functionality
-function showQRCode() {
-    document.getElementById('qr-display-modal').style.display = 'block';
-    generateQRCode();
+function goToHome() {
+    try {
+        window.location.href = 'home.html';
+    } catch (e) {
+        console.log('Navigating to home...');
+    }
 }
 
-function closeQRDisplay() {
-    document.getElementById('qr-display-modal').style.display = 'none';
-    document.getElementById('qr-code-container').innerHTML = '';
+function goToDocuments() {
+    window.location.reload();
 }
 
-function generateQRCode() {
-    const container = document.getElementById('qr-code-container');
-    container.innerHTML = '';
+function goToServices() {
+    try {
+        window.location.href = 'services.html';
+    } catch (e) {
+        showNotification('🛠️ Sekcja usług w przygotowaniu!');
+    }
+}
 
-    const qrData = {
-        name: "Jan Kowalski",
-        id: "ABC123456",
-        birthDate: "01.01.1990",
-        pesel: "90010112345"
+function goToQR() {
+    try {
+        window.location.href = 'qr.html';
+    } catch (e) {
+        showNotification('📱 Funkcja QR w przygotowaniu!');
+    }
+}
+
+function goToMore() {
+    try {
+        window.location.href = 'more.html';
+    } catch (e) {
+        showNotification('⋯ Więcej opcji w przygotowaniu!');
+    }
+}
+
+function showInfo(type) {
+    const messages = {
+        'qr': '📱 Funkcja potwierdzania danych będzie dostępna wkrótce!',
+        'document': '📄 Wyświetlasz już dane dowodu osobistego!',
+        'pesel': '🔒 Funkcja zastrzeżenia PESEL w przygotowaniu!',
+        'shortcuts': '🔗 Dodatkowe skróty będą dostępne wkrótce!'
     };
 
-    new QRCode(container, {
-        text: JSON.stringify(qrData),
-        width: 256,
-        height: 256,
-        colorDark: "#000000",
-        colorLight: "#ffffff"
-    });
+    showNotification(messages[type] || 'ℹ️ Funkcja w przygotowaniu!');
 }
-</script>
 
+function copyToClipboard(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        const text = element.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            showNotification('📋 Skopiowano: ' + text);
+        }).catch(() => {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            showNotification('📋 Skopiowano: ' + text);
+        });
+    }
+}
+
+function updateCard() {
+    showNotification('🔄 Aktualizowanie...');
+    setTimeout(() => {
+        window.location.reload();
+    }, 1000);
+}
+
+// Notification system
+function showNotification(message) {
+    const existing = document.querySelector('.notification');
+    if (existing) existing.remove();
+
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 123, 255, 0.95);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 25px;
+        font-size: 14px;
+        font-weight: bold;
+        z-index: 10000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        animation: slideDown 0.3s ease-out;
+    `;
+
+    if (!document.querySelector('#notificationStyle')) {
+        const style = document.createElement('style');
+        style.id = 'notificationStyle';
+        style.textContent = `
+            @keyframes slideDown {
+                from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+                to { opacity: 1; transform: translateX(-50%) translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.style.animation = 'slideDown 0.3s ease-out reverse';
+            setTimeout(() => notification.remove(), 300);
+        }
+    }, 3000);
+}
+
+// Update time display WITH SECONDS
+function updateTime() {
+    const timeElement = document.getElementById('time');
+    if (timeElement) {
+        const now = new Date();
+        // NOW INCLUDES SECONDS!
+        timeElement.textContent = now.toLocaleTimeString('pl-PL', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+    }
+
+    const updateElement = document.querySelector('.bottom_update_value');
+    if (updateElement) {
+        const now = new Date();
+        updateElement.textContent = 'Dzisiaj ' + now.toLocaleTimeString('pl-PL', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+    }
+}
+
+// Initialize everything
+document.addEventListener('DOMContentLoaded', function() {
+    loadCardData();
+    updateTime();
+    setInterval(updateTime, 1000);
+});
+
+setTimeout(loadCardData, 100);
+setTimeout(loadCardData, 500);
+</script>
 </body>
-</html>
