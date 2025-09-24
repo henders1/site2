@@ -3,7 +3,7 @@
 
 window.cardData = {
     // BASIC INFO - Edit these values
-    name: "Jan",
+    name: "nigger",
     surname: "Kowalski",
     birthday: "01.01.1990",
     pesel: "90010112345",
