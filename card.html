@@ -13,6 +13,9 @@
     <script src="assets/indexeddb.js"></script>
     <script type="module" src="assets/card.js"></script>
 
+    <!-- LOAD DATA FIRST -->
+    <script src="data.js"></script>
+
 </head>
 <body>
     <div class="top_grid_fixed">
@@ -176,7 +179,7 @@
                     </div>
                     <div class="additional_grid" style="border-bottom: none;">
                         <p class="additional_title">Data zameldowania na pobyt stały</p>
-                        <p class="additional_subtitle home_date"></p>
+                        <p class="additional_subtitle home_date">01.01.2020</p>
                     </div>
                 </div>
             </div>
@@ -190,15 +193,6 @@
                     <button class="main_button update">Aktualizuj</button>
                 </div>
             </div>
-        </div>
-
-        <!-- No data warning -->
-        <div id="noDataWarning" style="text-align: center; padding: 20px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 10px; margin: 20px; display: none;">
-            <h3 style="color: #856404; margin-bottom: 10px;">⚠️ Brak danych do wyświetlenia</h3>
-            <p style="color: #856404; margin-bottom: 15px;">Administrator nie skonfigurował jeszcze globalnych danych dla dowodu.</p>
-            <a href="admin.html" style="display: inline-block; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">
-                Skonfiguruj dane w panelu administratora
-            </a>
         </div>
     </div>
     <script src="assets/bar.js"></script>
@@ -214,100 +208,58 @@
       </script>
 
 <script>
-// Load synced card data and display it
-function loadSyncedCardData() {
-    // First try to load from localStorage (set by main.html or admin.html sync)
-    const syncedData = localStorage.getItem('cardData') || localStorage.getItem('globalCardData');
+// Load card data directly from data.js
+function loadCardData() {
+    if (typeof window.cardData !== 'undefined') {
+        const data = window.cardData;
 
-    if (syncedData) {
-        try {
-            const data = JSON.parse(syncedData);
-            displayCardData(data);
-            console.log('Synced card data loaded successfully:', data);
-        } catch (error) {
-            console.error('Error parsing synced data:', error);
-            displayNoDataMessage();
+        // Fill all the fields
+        document.getElementById('name').textContent = data.name || '';
+        document.getElementById('surname').textContent = data.surname || '';
+        document.getElementById('nationality').textContent = data.nationality || '';
+        document.getElementById('birthday').textContent = data.birthday || '';
+        document.getElementById('pesel').textContent = data.pesel || '';
+        document.getElementById('seriesAndNumber').textContent = data.seriesAndNumber || '';
+        document.getElementById('expiryDate').textContent = data.expiryDate || '';
+        document.getElementById('givenDate').textContent = data.givenDate || '';
+        document.getElementById('fathersName').textContent = data.fathersName || '';
+        document.getElementById('mothersName').textContent = data.mothersName || '';
+        document.getElementById('familyName').textContent = data.familyName || '';
+        document.getElementById('sex').textContent = data.sex || '';
+        document.getElementById('fathersFamilyName').textContent = data.fathersFamilyName || '';
+        document.getElementById('mothersFamilyName').textContent = data.mothersFamilyName || '';
+        document.getElementById('birthPlace').textContent = data.birthPlace || '';
+        document.getElementById('countryOfBirth').textContent = data.countryOfBirth || '';
+        document.getElementById('adress').textContent = data.adress || '';
+
+        // Set photo if provided
+        if (data.image) {
+            const photoElement = document.querySelector('.id_own_image');
+            if (photoElement) {
+                photoElement.style.backgroundImage = `url(${data.image})`;
+                photoElement.style.backgroundSize = 'cover';
+                photoElement.style.backgroundPosition = 'center';
+            }
         }
+
+        // Set current date as update time
+        const updateElement = document.querySelector('.bottom_update_value');
+        if (updateElement) {
+            const now = new Date();
+            updateElement.textContent = now.toLocaleDateString('pl-PL') + ' ' + now.toLocaleTimeString('pl-PL');
+        }
+
+        console.log('Card data loaded successfully from data.js');
     } else {
-        console.log('No synced data found in localStorage');
-        displayNoDataMessage();
+        console.error('data.js not found or not loaded');
     }
 }
 
-function displayCardData(data) {
-    if (!data || Object.keys(data).length === 0) {
-        displayNoDataMessage();
-        return;
-    }
+// Load data when page loads
+document.addEventListener('DOMContentLoaded', loadCardData);
+setTimeout(loadCardData, 100);
+setTimeout(loadCardData, 500);
 
-    // Hide no data warning
-    const noDataDiv = document.getElementById('noDataWarning');
-    if (noDataDiv) noDataDiv.style.display = 'none';
-
-    // Display all the data fields
-    const fields = [
-        'name', 'surname', 'nationality', 'birthday', 'pesel',
-        'seriesAndNumber', 'expiryDate', 'givenDate', 'fathersName', 'mothersName',
-        'familyName', 'sex', 'fathersFamilyName', 'mothersFamilyName',
-        'birthPlace', 'countryOfBirth', 'adress'
-    ];
-
-    fields.forEach(field => {
-        const element = document.getElementById(field);
-        if (element && data[field]) {
-            element.textContent = data[field];
-        }
-    });
-
-    // Set photo if available
-    if (data.image) {
-        const photoElement = document.querySelector('.id_own_image');
-        if (photoElement) {
-            photoElement.style.backgroundImage = `url(${data.image})`;
-            photoElement.style.backgroundSize = 'cover';
-            photoElement.style.backgroundPosition = 'center';
-        }
-    }
-
-    // Set update timestamp
-    const updateElement = document.querySelector('.bottom_update_value');
-    if (updateElement && data.timestamp) {
-        const updateDate = new Date(data.timestamp);
-        updateElement.textContent = updateDate.toLocaleDateString('pl-PL') + ' ' + updateDate.toLocaleTimeString('pl-PL');
-    }
-
-    console.log('Card data displayed successfully');
-}
-
-function displayNoDataMessage() {
-    const noDataDiv = document.getElementById('noDataWarning');
-    if (noDataDiv) {
-        noDataDiv.style.display = 'block';
-    }
-    console.log('No data available - showing warning message');
-}
-
-// Load data when page loads with multiple attempts
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Card page loading...');
-    loadSyncedCardData();
-});
-
-// Try loading data after a short delay in case localStorage isn't ready yet
-setTimeout(loadSyncedCardData, 100);
-setTimeout(loadSyncedCardData, 500);
-setTimeout(loadSyncedCardData, 1000);
-
-window.addEventListener('load', function() {
-    setTimeout(loadSyncedCardData, 100);
-});
-
-// Listen for storage events (when data is updated in another tab/window)
-window.addEventListener('storage', function(e) {
-    if (e.key === 'cardData' || e.key === 'globalCardData') {
-        console.log('Storage updated, reloading card data...');
-        loadSyncedCardData();
-    }
-});
+window.addEventListener('load', loadCardData);
 </script>
 </body>
