@@ -28,7 +28,7 @@ window.cardData = {
     countryOfBirth: "Polska",
 
     // PHOTO (optional - put Imgur link here)
-    image: "https://i.imgur.com/example.jpg"
+    image: "https://i.imgur.com/HCsuufZ.png"
 };
 
 console.log("Card data loaded:", window.cardData);
