@@ -1,0 +1,25 @@
+// Global configuration file - automatically updated by admin panel
+window.globalCardData = {
+    image: "https://i.imgur.com/example.jpg",
+    name: "Jan",
+    surname: "Kowalski", 
+    nationality: "polskie",
+    familyName: "Kowalski",
+    fathersFamilyName: "Kowalski", 
+    mothersFamilyName: "Nowak",
+    birthPlace: "Warszawa",
+    countryOfBirth: "Polska",
+    adress1: "ul. Przykładowa 123",
+    adress2: "00-001", 
+    city: "Warszawa",
+    mothersName: "Anna",
+    fathersName: "Piotr",
+    givenDate: "15/06/2024",
+    expiryDate: "15/06/2034", 
+    seriesAndNumber: "ABC123456",
+    birthday: "01.01.1990",
+    sex: "Mężczyzna",
+    pesel: "90010112345",
+    adress: "ul. Przykładowa 123 00-001, Warszawa",
+    timestamp: "2024-09-24T01:36:00.000Z"
+};
