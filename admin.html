@@ -23,14 +23,16 @@
         .form-group input:focus, .form-group select:focus { outline: none; border-color: #007bff; }
         .full-width { grid-column: 1 / -1; }
         .action-buttons { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid #f0f0f0; }
-        .save-button { padding: 15px 30px; background: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; margin: 0 10px; transition: background 0.3s ease; }
+        .save-button { padding: 15px 30px; background: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; margin: 0 10px; transition: background 0.3s ease; position: relative; }
         .save-button:hover { background: #1e7e34; }
+        .save-button:disabled { background: #6c757d; cursor: not-allowed; }
         .preview-button { padding: 15px 30px; background: #17a2b8; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; margin: 0 10px; transition: background 0.3s ease; }
         .preview-button:hover { background: #138496; }
-        .success-message { background: #d4edda; color: #155724; padding: 10px 15px; border-radius: 6px; margin: 10px 0; display: none; }
-        .error-message { background: #f8d7da; color: #721c24; padding: 10px 15px; border-radius: 6px; margin: 10px 0; display: none; }
-        .code-output { background: #f8f9fa; border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin: 15px 0; font-family: monospace; font-size: 12px; white-space: pre-wrap; max-height: 200px; overflow-y: auto; }
-        .instructions { background: #e7f3ff; border-left: 4px solid #007bff; padding: 15px; margin: 20px 0; }
+        .success-message { background: #d4edda; color: #155724; padding: 15px 20px; border-radius: 8px; margin: 15px 0; display: none; border-left: 4px solid #28a745; }
+        .error-message { background: #f8d7da; color: #721c24; padding: 15px 20px; border-radius: 8px; margin: 15px 0; display: none; border-left: 4px solid #dc3545; }
+        .code-output { background: #f8f9fa; border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin: 15px 0; font-family: monospace; font-size: 12px; white-space: pre-wrap; max-height: 300px; overflow-y: auto; }
+        .instructions { background: #e7f3ff; border-left: 4px solid #007bff; padding: 15px; margin: 20px 0; border-radius: 6px; }
+        .vercel-note { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 6px; }
         @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -38,7 +40,12 @@
     <div class="admin-container">
         <div class="admin-header">
             <h1 class="admin-title">🔧 Panel Administratora</h1>
-            <p class="admin-subtitle">Ustaw globalne dane dla wszystkich użytkowników na wszystkich urządzeniach</p>
+            <p class="admin-subtitle">Vercel-Compatible Solution - Generuje kod do ręcznej aktualizacji</p>
+        </div>
+
+        <div class="vercel-note">
+            <h3>📝 Dla Vercel:</h3>
+            <p>Ten system generuje kod JavaScript, który kopiujesz do pliku <code>global-data.js</code>. Działa na Vercel bez PHP!</p>
         </div>
 
         <div class="auth-section" id="authSection">
@@ -74,7 +81,9 @@
                 </div>
 
                 <div class="action-buttons">
-                    <button type="button" onclick="generateFileCode()" class="save-button">💾 Wygeneruj kod globalny</button>
+                    <button type="button" onclick="generateVercelCode()" class="save-button">
+                        🚀 Wygeneruj kod dla Vercel
+                    </button>
                     <button type="button" onclick="previewCard()" class="preview-button">👁️ Podgląd karty</button>
                 </div>
 
@@ -82,10 +91,11 @@
                 <div id="errorMessage" class="error-message"></div>
 
                 <div class="instructions" id="instructions" style="display: none;">
-                    <h3>📝 Instrukcja aktualizacji:</h3>
-                    <p><strong>Krok 1:</strong> Skopiuj cały kod poniżej</p>
-                    <p><strong>Krok 2:</strong> Zastąp zawartość pliku <code>global-data.js</code> na serwerze</p>
-                    <p><strong>Krok 3:</strong> Dane będą widoczne dla wszystkich użytkowników na wszystkich urządzeniach!</p>
+                    <h3>📝 Instrukcja dla Vercel:</h3>
+                    <p><strong>Krok 1:</strong> Skopiuj cały kod poniżej (Ctrl+A, Ctrl+C)</p>
+                    <p><strong>Krok 2:</strong> Otwórz plik <code>global-data.js</code> w edytorze</p>
+                    <p><strong>Krok 3:</strong> Zastąp całą zawartość pliku skopiowanym kodem</p>
+                    <p><strong>Krok 4:</strong> Zapisz i wdróż na Vercel - dane będą widoczne na wszystkich urządzeniach!</p>
                 </div>
 
                 <div id="generatedCode" class="code-output" style="display: none;"></div>
@@ -94,7 +104,7 @@
     </div>
 
     <script>
-        const ADMIN_PASSWORD = 'mobywatel8';
+        const ADMIN_PASSWORD = 'admin123'; // Change this!
 
         function authenticate() {
             const password = document.getElementById('adminPassword').value;
@@ -110,7 +120,6 @@
         }
 
         function loadCurrentSettings() {
-            // Try to load from existing global data file
             if (typeof window.globalCardData !== 'undefined') {
                 const data = window.globalCardData;
                 Object.keys(data).forEach(key => {
@@ -120,7 +129,7 @@
             }
         }
 
-        function generateFileCode() {
+        function generateVercelCode() {
             const form = document.getElementById('globalSettingsForm');
             const formData = new FormData(form);
             const globalData = {};
@@ -132,39 +141,45 @@
             globalData.adress = (globalData.adress1 || '') + ' ' + (globalData.adress2 || '') + ', ' + (globalData.city || '');
             globalData.timestamp = new Date().toISOString();
 
-            // Generate the file content
-            const fileContent = `// Global configuration file - edit this file to change data for ALL users
+            // Generate the JavaScript code for Vercel
+            const fileContent = `// Global data - updated for Vercel deployment
+// Copy this entire code and replace the contents of global-data.js
 window.globalCardData = {
-    image: "${globalData.image || ''}",
-    name: "${globalData.name || ''}",
-    surname: "${globalData.surname || ''}", 
-    nationality: "${globalData.nationality || ''}",
-    familyName: "${globalData.familyName || ''}",
-    fathersFamilyName: "${globalData.fathersFamilyName || ''}", 
-    mothersFamilyName: "${globalData.mothersFamilyName || ''}",
-    birthPlace: "${globalData.birthPlace || ''}",
-    countryOfBirth: "${globalData.countryOfBirth || ''}",
-    adress1: "${globalData.adress1 || ''}",
-    adress2: "${globalData.adress2 || ''}", 
-    city: "${globalData.city || ''}",
-    mothersName: "${globalData.mothersName || ''}",
-    fathersName: "${globalData.fathersName || ''}",
-    givenDate: "${globalData.givenDate || ''}",
-    expiryDate: "${globalData.expiryDate || ''}", 
-    seriesAndNumber: "${globalData.seriesAndNumber || ''}",
-    birthday: "${globalData.birthday || ''}",
-    sex: "${globalData.sex || ''}",
-    pesel: "${globalData.pesel || ''}",
-    adress: "${globalData.adress || ''}",
-    timestamp: "${globalData.timestamp || ''}"
-};`;
+    image: "${escapeString(globalData.image || '')}",
+    name: "${escapeString(globalData.name || '')}",
+    surname: "${escapeString(globalData.surname || '')}", 
+    nationality: "${escapeString(globalData.nationality || '')}",
+    familyName: "${escapeString(globalData.familyName || '')}",
+    fathersFamilyName: "${escapeString(globalData.fathersFamilyName || '')}", 
+    mothersFamilyName: "${escapeString(globalData.mothersFamilyName || '')}",
+    birthPlace: "${escapeString(globalData.birthPlace || '')}",
+    countryOfBirth: "${escapeString(globalData.countryOfBirth || '')}",
+    adress1: "${escapeString(globalData.adress1 || '')}",
+    adress2: "${escapeString(globalData.adress2 || '')}", 
+    city: "${escapeString(globalData.city || '')}",
+    mothersName: "${escapeString(globalData.mothersName || '')}",
+    fathersName: "${escapeString(globalData.fathersName || '')}",
+    givenDate: "${escapeString(globalData.givenDate || '')}",
+    expiryDate: "${escapeString(globalData.expiryDate || '')}", 
+    seriesAndNumber: "${escapeString(globalData.seriesAndNumber || '')}",
+    birthday: "${escapeString(globalData.birthday || '')}",
+    sex: "${escapeString(globalData.sex || '')}",
+    pesel: "${escapeString(globalData.pesel || '')}",
+    adress: "${escapeString(globalData.adress || '')}",
+    timestamp: "${globalData.timestamp}"
+};
 
-            // Show the generated code
+console.log('Global card data loaded:', window.globalCardData);`;
+
             document.getElementById('generatedCode').textContent = fileContent;
             document.getElementById('generatedCode').style.display = 'block';
             document.getElementById('instructions').style.display = 'block';
 
-            showMessage('success', 'Kod został wygenerowany! Skopiuj go i zastąp zawartość pliku global-data.js');
+            showMessage('success', '✅ Kod został wygenerowany dla Vercel! Skopiuj go i wklej do pliku global-data.js');
+        }
+
+        function escapeString(str) {
+            return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
         }
 
         function previewCard() {
@@ -176,17 +191,17 @@ window.globalCardData = {
             const errorDiv = document.getElementById('errorMessage');
             if (type === 'success') {
                 successDiv.style.display = 'block';
-                successDiv.textContent = text;
+                successDiv.innerHTML = text;
                 errorDiv.style.display = 'none';
             } else {
                 errorDiv.style.display = 'block';
-                errorDiv.textContent = text;
+                errorDiv.innerHTML = text;
                 successDiv.style.display = 'none';
             }
             setTimeout(() => {
                 successDiv.style.display = 'none';
                 errorDiv.style.display = 'none';
-            }, 8000);
+            }, 10000);
         }
 
         document.getElementById('adminPassword').addEventListener('keypress', function(e) {
@@ -194,7 +209,6 @@ window.globalCardData = {
         });
     </script>
 
-    <!-- Load global data if available -->
     <script src="global-data.js"></script>
 </body>
 </html>
