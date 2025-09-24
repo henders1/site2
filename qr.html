@@ -15,14 +15,58 @@
 
     <!-- Twój skrypt -->
     <script defer src="assets/main.js"></script>
+
+    <style>
+    /* Fix all QR page icons using your SVG files */
+    .bottom_element_image {
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    .bottom_element_image.home {
+        background-image: url('assets/images/coi_common_ui_ic_mobywatel_logo.svg');
+    }
+
+    .bottom_element_image.documents {
+        background-image: url('assets/images/coi_common_ui_ic_document_id.svg');
+    }
+
+    .bottom_element_image.services {
+        background-image: url('assets/images/da031_mbiznes.svg');
+    }
+
+    .bottom_element_image.qr {
+        background-image: url('assets/images/da025_ticket.svg');
+    }
+
+    .bottom_element_image.more {
+        background-image: url('assets/images/coi_common_ui_ic_help.svg');
+    }
+
+    /* Fix QR action icons */
+    .qr_grid_image {
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    .qr_image.scan {
+        background-image: url('assets/images/da025_ticket.svg');
+    }
+
+    .qr_image.show {
+        background-image: url('assets/images/coi_common_ui_ic_document_id.svg');
+    }
+    </style>
 </head>
 <body oncontextmenu="return false;">
 
   <div class="bottom_bar">
     <div class="bottom_bar_grid">
       <div class="bottom_element_grid" send="home">
-        <div class="bottom_element_image home_open home"></div>
-        <p class="bottom_element_text open">Pulpit</p>
+        <div class="bottom_element_image home"></div>
+        <p class="bottom_element_text">Pulpit</p>
       </div>
       <div class="bottom_element_grid" send="documents">
         <div class="bottom_element_image documents"></div>
@@ -34,7 +78,7 @@
       </div>
       <div class="bottom_element_grid" send="qr">
         <div class="bottom_element_image qr"></div>
-        <p class="bottom_element_text">Kod QR</p>
+        <p class="bottom_element_text open">Kod QR</p>
       </div>
       <div class="bottom_element_grid" send="more">
         <div class="bottom_element_image more"></div>
@@ -43,44 +87,141 @@
     </div>
   </div>
 
+  <div class="container">
+    <div class="qr_main_grid">
+      <div class="qr_title_grid">
+        <h1 class="qr_title">Kod QR</h1>
+        <p class="qr_subtitle">Wybierz, co chcesz zrobić</p>
+      </div>
 
-<div class="container">
-    <p class="main_title">Kod QR</p>
-    <p class="description">Wybierz, co chcesz zrobić</p>
-    <div class="action_grid">
-      <div class="action scan">
-        <img class="action_image" src="assets/images/checkbo.png">
-        <div class="action_text">
-            <p class="action_title">Zeskanuj kod QR</p>
-            <p class="action_subtitle">Zaloguj się lub potwierdź swoje dane.</p>
+      <div class="qr_grid">
+        <div class="qr_grid_element" onclick="openQRScanner()">
+          <div class="qr_grid_image">
+            <div class="qr_image scan"></div>
+          </div>
+          <div class="qr_grid_content">
+            <h2 class="qr_grid_title">Zeskanuj kod QR</h2>
+            <p class="qr_grid_desc">Zaloguj się lub potwierdź swoje dane.</p>
+          </div>
+          <img src="assets/images/coi_common_ui_ic_help.svg" class="qr_grid_arrow">
         </div>
-        <img class="arrow" src="svg/arrow.svg">
-      </div>
-      
-      <div class="action show">
-        <img class="action_image" src="svg/ai003_check_document.svg">
-        <div class="action_text">
-            <p class="action_title">Pokaż kod QR</p>
-            <p class="action_subtitle">Sprawdź dokument innej osoby.</p>
+
+        <div class="qr_grid_element" onclick="showQRCode()">
+          <div class="qr_grid_image">
+            <div class="qr_image show"></div>
+          </div>
+          <div class="qr_grid_content">
+            <h2 class="qr_grid_title">Pokaż kod QR</h2>
+            <p class="qr_grid_desc">Sprawdź dokument innej osoby.</p>
+          </div>
+          <img src="assets/images/coi_common_ui_ic_help.svg" class="qr_grid_arrow">
         </div>
-        <img class="arrow" src="svg/arrow.svg">
       </div>
-      
     </div>
-</div>
+  </div>
 
-<!-- Kontener na podgląd kamery -->
+  <!-- QR Scanner Modal -->
+  <div id="qr-scanner-modal" style="display: none;">
+    <div id="qr-scanner-content">
+      <video id="qr-video" autoplay></video>
+      <canvas id="qr-canvas" style="display: none;"></canvas>
+      <button onclick="closeQRScanner()">Zamknij</button>
+    </div>
+  </div>
 
-<script src="assets/bar.js"></script>
-<script src="assets/qr.js"></script>
-</body>
+  <!-- QR Display Modal -->
+  <div id="qr-display-modal" style="display: none;">
+    <div id="qr-display-content">
+      <div id="qr-code-container"></div>
+      <button onclick="closeQRDisplay()">Zamknij</button>
+    </div>
+  </div>
+
 <script>
-  fetch('/api/antidebug.js')
-    .then(res => res.text())
-    .then(code => {
-      const s = document.createElement('script');
-      s.textContent = code;
-      document.body.appendChild(s);
+// QR Scanner functionality
+function openQRScanner() {
+    document.getElementById('qr-scanner-modal').style.display = 'block';
+    startQRScanner();
+}
+
+function closeQRScanner() {
+    document.getElementById('qr-scanner-modal').style.display = 'none';
+    stopQRScanner();
+}
+
+function startQRScanner() {
+    const video = document.getElementById('qr-video');
+    const canvas = document.getElementById('qr-canvas');
+    const context = canvas.getContext('2d');
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+        .then(stream => {
+            video.srcObject = stream;
+            video.addEventListener('loadedmetadata', () => {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                scanQRCode();
+            });
+        })
+        .catch(err => {
+            console.error('Error accessing camera:', err);
+            alert('Nie można uzyskać dostępu do kamery');
+        });
+
+    function scanQRCode() {
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+            if (code) {
+                alert('QR Code scanned: ' + code.data);
+                closeQRScanner();
+                return;
+            }
+        }
+        requestAnimationFrame(scanQRCode);
+    }
+}
+
+function stopQRScanner() {
+    const video = document.getElementById('qr-video');
+    if (video.srcObject) {
+        video.srcObject.getTracks().forEach(track => track.stop());
+    }
+}
+
+// QR Display functionality
+function showQRCode() {
+    document.getElementById('qr-display-modal').style.display = 'block';
+    generateQRCode();
+}
+
+function closeQRDisplay() {
+    document.getElementById('qr-display-modal').style.display = 'none';
+    document.getElementById('qr-code-container').innerHTML = '';
+}
+
+function generateQRCode() {
+    const container = document.getElementById('qr-code-container');
+    container.innerHTML = '';
+
+    const qrData = {
+        name: "Jan Kowalski",
+        id: "ABC123456",
+        birthDate: "01.01.1990",
+        pesel: "90010112345"
+    };
+
+    new QRCode(container, {
+        text: JSON.stringify(qrData),
+        width: 256,
+        height: 256,
+        colorDark: "#000000",
+        colorLight: "#ffffff"
     });
+}
 </script>
+
+</body>
 </html>
