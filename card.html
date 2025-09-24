@@ -50,6 +50,17 @@
     .bottom_element_grid:hover {
         opacity: 0.7;
     }
+
+    /* Make sure the expandable header is clearly clickable */
+    .expandable-click-area {
+        cursor: pointer;
+        user-select: none;
+        padding: 10px 0;
+    }
+
+    .expandable-click-area:active {
+        background-color: #f5f5f5;
+    }
     </style>
 
 </head>
@@ -182,16 +193,19 @@
             </div>
         </div>
 
-        <!-- EXPANDABLE SECTION STYLED LIKE OTHER INFO -->
+        <!-- FIXED EXPANDABLE SECTION -->
         <div class="other_grid">
-            <div class="bottom_holder info_holder" onclick="toggleData()">
-                <div class="bottom_grid">
-                    <p class="bottom_text" style="color: #1f2125; margin-bottom: 0;">Twoje dodatkowe dane</p>
-                    <span style="font-size: 20px; color: #666; margin-left: 10px;" id="arrow">→</span>
+            <div class="bottom_holder info_holder">
+                <!-- CLEAR CLICKABLE AREA -->
+                <div class="expandable-click-area" onclick="toggleDataSection()">
+                    <div class="bottom_grid">
+                        <p class="bottom_text" style="color: #1f2125; margin-bottom: 0;">Twoje dodatkowe dane</p>
+                        <span style="font-size: 20px; color: #666; margin-left: 10px;" id="expandArrow">→</span>
+                    </div>
                 </div>
 
-                <!-- ADDITIONAL INFO STYLED LIKE CONFIRM_INFO BOXES -->
-                <div id="content" style="display: none;">
+                <!-- ADDITIONAL INFO STYLED LIKE EXISTING BOXES -->
+                <div id="additionalContent" style="display: none;">
                     <div class="additional_holder">
                         <div class="confirm_box">
                             <p class="box_top">Nazwisko rodowe</p>
@@ -242,29 +256,43 @@
     </div>
 
 <script>
-// SIMPLE TOGGLE FUNCTION - NO BLUE POPUP
-let expanded = false;
+// FIXED TOGGLE FUNCTION WITH CONSOLE LOGGING
+let isDataExpanded = false;
 
-function toggleData() {
-    const content = document.getElementById('content');
-    const arrow = document.getElementById('arrow');
+function toggleDataSection() {
+    console.log('toggleDataSection called! Current state:', isDataExpanded);
+
+    const content = document.getElementById('additionalContent');
+    const arrow = document.getElementById('expandArrow');
 
     if (!content || !arrow) {
+        console.error('Elements not found! content:', content, 'arrow:', arrow);
         return;
     }
 
-    expanded = !expanded;
+    isDataExpanded = !isDataExpanded;
 
-    if (expanded) {
+    if (isDataExpanded) {
         // SHOW
         content.style.display = 'block';
         arrow.textContent = '↓';
+        console.log('EXPANDED - showing additional data');
     } else {
         // HIDE
         content.style.display = 'none';
         arrow.textContent = '→';
+        console.log('COLLAPSED - hiding additional data');
     }
 }
+
+// Make function globally available for debugging
+window.toggleDataSection = toggleDataSection;
+
+// Test function you can call in console
+window.testToggle = function() {
+    console.log('TEST: Manual toggle called');
+    toggleDataSection();
+};
 
 // Load card data from data.js - no authentication required
 function loadCardData() {
@@ -289,6 +317,8 @@ function loadCardData() {
                     photoElement.style.backgroundPosition = 'center';
                 }
             }
+
+            console.log('✅ Card loaded with working toggle function');
         }
     } catch (error) {
         console.log('Using default data:', error);
@@ -446,6 +476,9 @@ document.addEventListener('DOMContentLoaded', function() {
     loadCardData();
     updateTime();
     setInterval(updateTime, 1000);
+
+    console.log('Page loaded - toggle function is ready');
+    console.log('You can test manually by typing: testToggle()');
 });
 
 setTimeout(loadCardData, 100);
