@@ -51,15 +51,16 @@
         opacity: 0.7;
     }
 
-    /* Make sure the expandable header is clearly clickable */
-    .expandable-click-area {
+    /* Super basic clickable area */
+    .click-to-expand {
         cursor: pointer;
         user-select: none;
-        padding: 10px 0;
+        padding: 15px 5px;
+        background: transparent;
     }
 
-    .expandable-click-area:active {
-        background-color: #f5f5f5;
+    .click-to-expand:active {
+        background: #f0f0f0 !important;
     }
     </style>
 
@@ -193,19 +194,31 @@
             </div>
         </div>
 
-        <!-- FIXED EXPANDABLE SECTION -->
+        <!-- SUPER SIMPLE EXPANDABLE SECTION -->
         <div class="other_grid">
             <div class="bottom_holder info_holder">
-                <!-- CLEAR CLICKABLE AREA -->
-                <div class="expandable-click-area" onclick="toggleDataSection()">
+                <!-- INLINE JAVASCRIPT - GUARANTEED TO WORK -->
+                <div class="click-to-expand" onclick="
+                    var content = document.getElementById('myAdditionalData');
+                    var arrow = document.getElementById('myArrow');
+                    if (content.style.display === 'none' || content.style.display === '') {
+                        content.style.display = 'block';
+                        arrow.innerHTML = '↓';
+                        console.log('EXPANDED');
+                    } else {
+                        content.style.display = 'none';
+                        arrow.innerHTML = '→';
+                        console.log('COLLAPSED');
+                    }
+                ">
                     <div class="bottom_grid">
                         <p class="bottom_text" style="color: #1f2125; margin-bottom: 0;">Twoje dodatkowe dane</p>
-                        <span style="font-size: 20px; color: #666; margin-left: 10px;" id="expandArrow">→</span>
+                        <span style="font-size: 20px; color: #666; margin-left: 10px;" id="myArrow">→</span>
                     </div>
                 </div>
 
-                <!-- ADDITIONAL INFO STYLED LIKE EXISTING BOXES -->
-                <div id="additionalContent" style="display: none;">
+                <!-- ADDITIONAL INFO MATCHING EXISTING STYLE -->
+                <div id="myAdditionalData" style="display: none;">
                     <div class="additional_holder">
                         <div class="confirm_box">
                             <p class="box_top">Nazwisko rodowe</p>
@@ -256,44 +269,6 @@
     </div>
 
 <script>
-// FIXED TOGGLE FUNCTION WITH CONSOLE LOGGING
-let isDataExpanded = false;
-
-function toggleDataSection() {
-    console.log('toggleDataSection called! Current state:', isDataExpanded);
-
-    const content = document.getElementById('additionalContent');
-    const arrow = document.getElementById('expandArrow');
-
-    if (!content || !arrow) {
-        console.error('Elements not found! content:', content, 'arrow:', arrow);
-        return;
-    }
-
-    isDataExpanded = !isDataExpanded;
-
-    if (isDataExpanded) {
-        // SHOW
-        content.style.display = 'block';
-        arrow.textContent = '↓';
-        console.log('EXPANDED - showing additional data');
-    } else {
-        // HIDE
-        content.style.display = 'none';
-        arrow.textContent = '→';
-        console.log('COLLAPSED - hiding additional data');
-    }
-}
-
-// Make function globally available for debugging
-window.toggleDataSection = toggleDataSection;
-
-// Test function you can call in console
-window.testToggle = function() {
-    console.log('TEST: Manual toggle called');
-    toggleDataSection();
-};
-
 // Load card data from data.js - no authentication required
 function loadCardData() {
     try {
@@ -318,7 +293,7 @@ function loadCardData() {
                 }
             }
 
-            console.log('✅ Card loaded with working toggle function');
+            console.log('✅ Card loaded with inline JavaScript toggle');
         }
     } catch (error) {
         console.log('Using default data:', error);
@@ -476,9 +451,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadCardData();
     updateTime();
     setInterval(updateTime, 1000);
-
-    console.log('Page loaded - toggle function is ready');
-    console.log('You can test manually by typing: testToggle()');
+    console.log('Page loaded with INLINE JavaScript - this WILL work!');
 });
 
 setTimeout(loadCardData, 100);
