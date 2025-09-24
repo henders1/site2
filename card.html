@@ -41,96 +41,6 @@
         background-image: url('assets/images/coi_common_ui_ic_help.svg');
     }
 
-    /* SUPER SIMPLE EXPANDABLE SECTION - BULLETPROOF */
-    .expandable-wrapper {
-        margin: 20px 5%;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        overflow: hidden;
-    }
-
-    .expandable-header-new {
-        padding: 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        cursor: pointer;
-        background: white;
-        border: none;
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    .expandable-header-new:active {
-        background: #f5f5f5;
-    }
-
-    .expandable-title-new {
-        font-size: 18px;
-        font-weight: 600;
-        color: #1f2125;
-        margin: 0;
-    }
-
-    .expandable-arrow-new {
-        font-size: 20px;
-        transition: transform 0.3s ease;
-        color: #666;
-    }
-
-    .expandable-content-new {
-        display: none;
-        padding: 0 20px 20px 20px;
-        background: white;
-    }
-
-    .expandable-content-new.visible {
-        display: block;
-        animation: slideDown 0.3s ease-out;
-    }
-
-    @keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .data-row-new {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        padding: 12px 0;
-        border-bottom: 1px solid #f0f0f0;
-    }
-
-    .data-row-new:last-child {
-        border-bottom: none;
-    }
-
-    .data-label-new {
-        font-size: 14px;
-        color: #666;
-        margin: 0;
-        flex: 1;
-        padding-right: 15px;
-    }
-
-    .data-value-new {
-        font-size: 16px;
-        font-weight: 600;
-        color: #000;
-        margin: 0;
-        text-align: right;
-        flex: 1;
-        word-break: break-word;
-    }
-
     /* Make bottom navigation clickable */
     .bottom_element_grid {
         cursor: pointer;
@@ -272,47 +182,53 @@
             </div>
         </div>
 
-        <!-- SUPER SIMPLE BULLETPROOF EXPANDABLE SECTION -->
-        <div class="expandable-wrapper">
-            <div class="expandable-header-new" onclick="toggleData()">
-                <h3 class="expandable-title-new">Twoje dodatkowe dane</h3>
-                <span class="expandable-arrow-new" id="arrow">→</span>
+        <!-- EXPANDABLE SECTION STYLED LIKE OTHER INFO -->
+        <div class="other_grid">
+            <div class="bottom_holder info_holder" onclick="toggleData()">
+                <div class="bottom_grid">
+                    <p class="bottom_text" style="color: #1f2125; margin-bottom: 0;">Twoje dodatkowe dane</p>
+                    <span style="font-size: 20px; color: #666; margin-left: 10px;" id="arrow">→</span>
+                </div>
+
+                <!-- ADDITIONAL INFO STYLED LIKE CONFIRM_INFO BOXES -->
+                <div id="content" style="display: none;">
+                    <div class="additional_holder">
+                        <div class="confirm_box">
+                            <p class="box_top">Nazwisko rodowe</p>
+                            <p class="box_value" id="familyName">Kowalski</p>
+                        </div>
+                        <div class="confirm_box">
+                            <p class="box_top">Płeć</p>
+                            <p class="box_value" id="sex">Mężczyzna</p>
+                        </div>
+                        <div class="confirm_box">
+                            <p class="box_top">Nazwisko rodowe ojca</p>
+                            <p class="box_value" id="fathersFamilyName">Kowalski</p>
+                        </div>
+                        <div class="confirm_box">
+                            <p class="box_top">Nazwisko rodowe matki</p>
+                            <p class="box_value" id="mothersFamilyName">Nowak</p>
+                        </div>
+                        <div class="confirm_box">
+                            <p class="box_top">Miejsce urodzenia</p>
+                            <p class="box_value" id="birthPlace">Warszawa</p>
+                        </div>
+                        <div class="confirm_box">
+                            <p class="box_top">Kraj urodzenia</p>
+                            <p class="box_value" id="countryOfBirth">Polska</p>
+                        </div>
+                        <div class="confirm_box">
+                            <p class="box_top">Adres zameldowania na pobyt stały</p>
+                            <p class="box_value" id="adress">ul. Przykładowa 123, 00-001 Warszawa</p>
+                        </div>
+                        <div class="confirm_box" style="border: none;">
+                            <p class="box_top">Data zameldowania na pobyt stały</p>
+                            <p class="box_value" id="registrationDate">01.01.2020</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="expandable-content-new" id="content">
-                <div class="data-row-new">
-                    <p class="data-label-new">Nazwisko rodowe</p>
-                    <p class="data-value-new" id="familyName">Kowalski</p>
-                </div>
-                <div class="data-row-new">
-                    <p class="data-label-new">Płeć</p>
-                    <p class="data-value-new" id="sex">Mężczyzna</p>
-                </div>
-                <div class="data-row-new">
-                    <p class="data-label-new">Nazwisko rodowe ojca</p>
-                    <p class="data-value-new" id="fathersFamilyName">Kowalski</p>
-                </div>
-                <div class="data-row-new">
-                    <p class="data-label-new">Nazwisko rodowe matki</p>
-                    <p class="data-value-new" id="mothersFamilyName">Nowak</p>
-                </div>
-                <div class="data-row-new">
-                    <p class="data-label-new">Miejsce urodzenia</p>
-                    <p class="data-value-new" id="birthPlace">Warszawa</p>
-                </div>
-                <div class="data-row-new">
-                    <p class="data-label-new">Kraj urodzenia</p>
-                    <p class="data-value-new" id="countryOfBirth">Polska</p>
-                </div>
-                <div class="data-row-new">
-                    <p class="data-label-new">Adres zameldowania na pobyt stały</p>
-                    <p class="data-value-new" id="adress">ul. Przykładowa 123, 00-001 Warszawa</p>
-                </div>
-                <div class="data-row-new">
-                    <p class="data-label-new">Data zameldowania na pobyt stały</p>
-                    <p class="data-value-new" id="registrationDate">01.01.2020</p>
-                </div>
-            </div>
-        </div>
+        </div>        
 
         <div class="bottom_holder" style="height: 90px; margin-bottom: 120px;">
             <div class="bottom_update">
@@ -326,17 +242,14 @@
     </div>
 
 <script>
-// SUPER SIMPLE TOGGLE FUNCTION
+// SIMPLE TOGGLE FUNCTION - NO BLUE POPUP
 let expanded = false;
 
 function toggleData() {
-    console.log('toggleData called! Current state:', expanded);
-
     const content = document.getElementById('content');
     const arrow = document.getElementById('arrow');
 
     if (!content || !arrow) {
-        console.error('Elements not found!');
         return;
     }
 
@@ -345,29 +258,13 @@ function toggleData() {
     if (expanded) {
         // SHOW
         content.style.display = 'block';
-        content.classList.add('visible');
         arrow.textContent = '↓';
-        showNotification('📋 Pokazano dodatkowe dane');
-        console.log('EXPANDED - content should be visible');
     } else {
         // HIDE
         content.style.display = 'none';
-        content.classList.remove('visible');
         arrow.textContent = '→';
-        showNotification('📋 Ukryto dodatkowe dane');
-        console.log('COLLAPSED - content should be hidden');
     }
 }
-
-// TEST FUNCTION - call this in console to test
-function testToggle() {
-    console.log('TEST: Calling toggleData()');
-    toggleData();
-}
-
-// Make functions globally available
-window.toggleData = toggleData;
-window.testToggle = testToggle;
 
 // Load card data from data.js - no authentication required
 function loadCardData() {
@@ -392,8 +289,6 @@ function loadCardData() {
                     photoElement.style.backgroundPosition = 'center';
                 }
             }
-
-            console.log('✅ Card loaded with bulletproof expandable section');
         }
     } catch (error) {
         console.log('Using default data:', error);
@@ -485,7 +380,7 @@ function updateCard() {
     }, 1000);
 }
 
-// Notification system
+// Notification system (only for other functions, not expand/collapse)
 function showNotification(message) {
     const existing = document.querySelector('.notification');
     if (existing) existing.remove();
@@ -551,7 +446,6 @@ document.addEventListener('DOMContentLoaded', function() {
     loadCardData();
     updateTime();
     setInterval(updateTime, 1000);
-    console.log('Page loaded - expandable section ready');
 });
 
 setTimeout(loadCardData, 100);
