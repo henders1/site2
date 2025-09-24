@@ -62,6 +62,26 @@
     .click-to-expand:active {
         background: #f0f0f0 !important;
     }
+
+    /* FORCE THE ADDITIONAL DATA TO BE VISIBLE WITH !important */
+    #myAdditionalData {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: none !important;
+        overflow: visible !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        position: relative !important;
+        z-index: 1 !important;
+        background: white !important;
+        margin: 10px 0 !important;
+        padding: 10px !important;
+        border: 1px solid #ddd !important;
+    }
+
+    #myAdditionalData.hidden {
+        display: none !important;
+    }
     </style>
 
 </head>
@@ -194,21 +214,24 @@
             </div>
         </div>
 
-        <!-- SUPER SIMPLE EXPANDABLE SECTION -->
+        <!-- SUPER SIMPLE EXPANDABLE SECTION WITH FORCED VISIBILITY -->
         <div class="other_grid">
             <div class="bottom_holder info_holder">
-                <!-- INLINE JAVASCRIPT - GUARANTEED TO WORK -->
+                <!-- IMPROVED INLINE JAVASCRIPT WITH CLASS TOGGLE -->
                 <div class="click-to-expand" onclick="
                     var content = document.getElementById('myAdditionalData');
                     var arrow = document.getElementById('myArrow');
-                    if (content.style.display === 'none' || content.style.display === '') {
+                    console.log('CLICKED! Current classes:', content.className);
+                    if (content.classList.contains('hidden')) {
+                        content.classList.remove('hidden');
                         content.style.display = 'block';
                         arrow.innerHTML = '↓';
-                        console.log('EXPANDED');
+                        console.log('EXPANDED - removed hidden class');
                     } else {
+                        content.classList.add('hidden');
                         content.style.display = 'none';
                         arrow.innerHTML = '→';
-                        console.log('COLLAPSED');
+                        console.log('COLLAPSED - added hidden class');
                     }
                 ">
                     <div class="bottom_grid">
@@ -217,8 +240,8 @@
                     </div>
                 </div>
 
-                <!-- ADDITIONAL INFO MATCHING EXISTING STYLE -->
-                <div id="myAdditionalData" style="display: none;">
+                <!-- ADDITIONAL INFO WITH FORCED VISIBILITY -->
+                <div id="myAdditionalData" class="hidden">
                     <div class="additional_holder">
                         <div class="confirm_box">
                             <p class="box_top">Nazwisko rodowe</p>
@@ -293,7 +316,7 @@ function loadCardData() {
                 }
             }
 
-            console.log('✅ Card loaded with inline JavaScript toggle');
+            console.log('✅ Card loaded with SUPER VISIBLE additional data');
         }
     } catch (error) {
         console.log('Using default data:', error);
@@ -451,7 +474,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadCardData();
     updateTime();
     setInterval(updateTime, 1000);
-    console.log('Page loaded with INLINE JavaScript - this WILL work!');
+    console.log('Page loaded with FORCED VISIBILITY for additional data');
 });
 
 setTimeout(loadCardData, 100);
