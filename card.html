@@ -41,13 +41,88 @@
         background-image: url('assets/images/coi_common_ui_ic_help.svg');
     }
 
-    /* Fix card action icons */
-    .under_image {
-        background-size: contain;
-        background-repeat: no-repeat;
-        background-position: center;
-        width: 24px;
-        height: 24px;
+    /* Make additional data section expandable - FIXED */
+    .info_holder {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .info_holder:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+
+    /* START COLLAPSED - Additional data hidden by default */
+    .additional_holder {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.5s ease-in-out, opacity 0.3s ease;
+        opacity: 0;
+        margin-top: 0;
+    }
+
+    /* EXPANDED STATE */
+    .additional_holder.expanded {
+        max-height: 1000px;
+        opacity: 1;
+        margin-top: 20px;
+    }
+
+    /* Arrow starts pointing RIGHT, rotates to DOWN when expanded */
+    .action_arrow {
+        transition: transform 0.3s ease;
+        transform: rotate(0deg); /* Start pointing right */
+    }
+
+    .action_arrow.rotated {
+        transform: rotate(90deg); /* Rotate to point down */
+    }
+
+    /* Improved styling for additional data */
+    .additional_grid {
+        padding: 15px 0;
+        border-bottom: 1px solid #f0f0f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .additional_grid:last-child {
+        border-bottom: none;
+    }
+
+    .additional_title {
+        font-size: 14px;
+        color: #666;
+        margin: 0;
+        flex: 1;
+        padding-right: 10px;
+    }
+
+    .additional_subtitle {
+        font-size: 16px;
+        font-weight: 600;
+        color: #000;
+        margin: 0;
+        text-align: right;
+        flex: 1;
+        word-break: break-word;
+    }
+
+    /* Animation for expansion */
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .additional_grid {
+        animation: slideIn 0.3s ease-out;
     }
 
     /* Make bottom navigation clickable */
@@ -190,13 +265,17 @@
                 <p class="box_value" id="mothersName">Anna</p>
             </div>
         </div>
+
+        <!-- FIXED EXPANDABLE ADDITIONAL DATA SECTION -->
         <div class="other_grid">
-            <div class="bottom_holder info_holder">
+            <div class="bottom_holder info_holder" onclick="toggleAdditionalData()">
                 <div class="bottom_grid">
-                    <p class="bottom_text" style="color: #1f2125; margin-bottom: 120px;">Twoje dodatkowe dane</p>
+                    <p class="bottom_text" style="color: #1f2125; margin-bottom: 0;">Twoje dodatkowe dane</p>
+                    <img class="action_arrow" src="assets/images/ic_arrow_forward_Dgray.svg" id="additionalDataArrow">
                 </div>
-                <img class="action_arrow" src="assets/images/ic_arrow_forward_Dgray.svg">
-                <div class="additional_holder">
+
+                <!-- THIS SECTION STARTS COLLAPSED AND EXPANDS ON CLICK -->
+                <div class="additional_holder" id="additionalDataContainer">
                     <div class="additional_grid">
                         <p class="additional_title">Nazwisko rodowe</p>
                         <p class="additional_subtitle" id="familyName">Kowalski</p>
@@ -227,7 +306,7 @@
                     </div>
                     <div class="additional_grid" style="border-bottom: none;">
                         <p class="additional_title">Data zameldowania na pobyt stały</p>
-                        <p class="additional_subtitle home_date">01.01.2020</p>
+                        <p class="additional_subtitle home_date" id="registrationDate">01.01.2020</p>
                     </div>
                 </div>
             </div>
@@ -244,13 +323,36 @@
     </div>
 
 <script>
+// State for additional data expansion
+let additionalDataExpanded = false;
+
+// Toggle additional data visibility - FIXED
+function toggleAdditionalData() {
+    const container = document.getElementById('additionalDataContainer');
+    const arrow = document.getElementById('additionalDataArrow');
+
+    additionalDataExpanded = !additionalDataExpanded;
+
+    if (additionalDataExpanded) {
+        // EXPAND: Show data and rotate arrow
+        container.classList.add('expanded');
+        arrow.classList.add('rotated');
+        showNotification('📋 Pokazano dodatkowe dane');
+    } else {
+        // COLLAPSE: Hide data and reset arrow
+        container.classList.remove('expanded');
+        arrow.classList.remove('rotated');
+        showNotification('📋 Ukryto dodatkowe dane');
+    }
+}
+
 // Load card data from data.js - no authentication required
 function loadCardData() {
     try {
         if (typeof window.cardData !== 'undefined' && window.cardData) {
             const data = window.cardData;
 
-            // Update all fields
+            // Update all fields including additional data
             Object.keys(data).forEach(key => {
                 const element = document.getElementById(key);
                 if (element && data[key]) {
@@ -268,7 +370,7 @@ function loadCardData() {
                 }
             }
 
-            console.log('✅ Card loaded successfully with working SVG icons and seconds');
+            console.log('✅ Card loaded with properly working expandable data');
         }
     } catch (error) {
         console.log('Using default data:', error);
