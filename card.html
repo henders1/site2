@@ -13,9 +13,6 @@
     <script src="assets/indexeddb.js"></script>
     <script type="module" src="assets/card.js"></script>
 
-    <!-- Global data file - LOAD THIS FIRST -->
-    <script src="global-data.js"></script>
-
 </head>
 <body>
     <div class="top_grid_fixed">
@@ -194,6 +191,15 @@
                 </div>
             </div>
         </div>
+
+        <!-- No data warning -->
+        <div id="noDataWarning" style="text-align: center; padding: 20px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 10px; margin: 20px; display: none;">
+            <h3 style="color: #856404; margin-bottom: 10px;">⚠️ Brak danych do wyświetlenia</h3>
+            <p style="color: #856404; margin-bottom: 15px;">Administrator nie skonfigurował jeszcze globalnych danych dla dowodu.</p>
+            <a href="admin.html" style="display: inline-block; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">
+                Skonfiguruj dane w panelu administratora
+            </a>
+        </div>
     </div>
     <script src="assets/bar.js"></script>
     <script src="assets/manifest.js"></script>
@@ -208,18 +214,23 @@
       </script>
 
 <script>
-function loadGlobalCardData() {
-    // Load from global-data.js file (works across ALL devices)
-    if (typeof window.globalCardData !== 'undefined') {
-        displayCardData(window.globalCardData);
-    } else {
-        // Fallback to localStorage
-        const localData = localStorage.getItem('cardData');
-        if (localData) {
-            displayCardData(JSON.parse(localData));
-        } else {
+// Load synced card data and display it
+function loadSyncedCardData() {
+    // First try to load from localStorage (set by main.html or admin.html sync)
+    const syncedData = localStorage.getItem('cardData') || localStorage.getItem('globalCardData');
+
+    if (syncedData) {
+        try {
+            const data = JSON.parse(syncedData);
+            displayCardData(data);
+            console.log('Synced card data loaded successfully:', data);
+        } catch (error) {
+            console.error('Error parsing synced data:', error);
             displayNoDataMessage();
         }
+    } else {
+        console.log('No synced data found in localStorage');
+        displayNoDataMessage();
     }
 }
 
@@ -229,53 +240,74 @@ function displayCardData(data) {
         return;
     }
 
-    if (data.name && document.getElementById('name')) document.getElementById('name').textContent = data.name;
-    if (data.surname && document.getElementById('surname')) document.getElementById('surname').textContent = data.surname;
-    if (data.nationality && document.getElementById('nationality')) document.getElementById('nationality').textContent = data.nationality;
-    if (data.birthday && document.getElementById('birthday')) document.getElementById('birthday').textContent = data.birthday;
-    if (data.pesel && document.getElementById('pesel')) document.getElementById('pesel').textContent = data.pesel;
-    if (data.seriesAndNumber && document.getElementById('seriesAndNumber')) document.getElementById('seriesAndNumber').textContent = data.seriesAndNumber;
-    if (data.expiryDate && document.getElementById('expiryDate')) document.getElementById('expiryDate').textContent = data.expiryDate;
-    if (data.givenDate && document.getElementById('givenDate')) document.getElementById('givenDate').textContent = data.givenDate;
-    if (data.fathersName && document.getElementById('fathersName')) document.getElementById('fathersName').textContent = data.fathersName;
-    if (data.mothersName && document.getElementById('mothersName')) document.getElementById('mothersName').textContent = data.mothersName;
-    if (data.familyName && document.getElementById('familyName')) document.getElementById('familyName').textContent = data.familyName;
-    if (data.sex && document.getElementById('sex')) document.getElementById('sex').textContent = data.sex;
-    if (data.fathersFamilyName && document.getElementById('fathersFamilyName')) document.getElementById('fathersFamilyName').textContent = data.fathersFamilyName;
-    if (data.mothersFamilyName && document.getElementById('mothersFamilyName')) document.getElementById('mothersFamilyName').textContent = data.mothersFamilyName;
-    if (data.birthPlace && document.getElementById('birthPlace')) document.getElementById('birthPlace').textContent = data.birthPlace;
-    if (data.countryOfBirth && document.getElementById('countryOfBirth')) document.getElementById('countryOfBirth').textContent = data.countryOfBirth;
-    if (data.adress && document.getElementById('adress')) document.getElementById('adress').textContent = data.adress;
+    // Hide no data warning
+    const noDataDiv = document.getElementById('noDataWarning');
+    if (noDataDiv) noDataDiv.style.display = 'none';
 
+    // Display all the data fields
+    const fields = [
+        'name', 'surname', 'nationality', 'birthday', 'pesel',
+        'seriesAndNumber', 'expiryDate', 'givenDate', 'fathersName', 'mothersName',
+        'familyName', 'sex', 'fathersFamilyName', 'mothersFamilyName',
+        'birthPlace', 'countryOfBirth', 'adress'
+    ];
+
+    fields.forEach(field => {
+        const element = document.getElementById(field);
+        if (element && data[field]) {
+            element.textContent = data[field];
+        }
+    });
+
+    // Set photo if available
+    if (data.image) {
+        const photoElement = document.querySelector('.id_own_image');
+        if (photoElement) {
+            photoElement.style.backgroundImage = `url(${data.image})`;
+            photoElement.style.backgroundSize = 'cover';
+            photoElement.style.backgroundPosition = 'center';
+        }
+    }
+
+    // Set update timestamp
     const updateElement = document.querySelector('.bottom_update_value');
     if (updateElement && data.timestamp) {
         const updateDate = new Date(data.timestamp);
         updateElement.textContent = updateDate.toLocaleDateString('pl-PL') + ' ' + updateDate.toLocaleTimeString('pl-PL');
     }
 
-    console.log('Globalne dane zostały wczytane i wyświetlone');
+    console.log('Card data displayed successfully');
 }
 
 function displayNoDataMessage() {
-    const container = document.querySelector('.container');
-    const noDataDiv = document.createElement('div');
-    noDataDiv.style.cssText = 'text-align: center; padding: 20px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 10px; margin: 20px;';
-    noDataDiv.innerHTML = '<h3 style="color: #856404; margin-bottom: 10px;">⚠️ Brak danych do wyświetlenia</h3><p style="color: #856404; margin-bottom: 15px;">Administrator nie skonfigurował jeszcze globalnych danych dla dowodu.</p><a href="admin.html" style="display: inline-block; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">Skonfiguruj w panelu administratora</a>';
-    container.insertBefore(noDataDiv, container.firstChild);
+    const noDataDiv = document.getElementById('noDataWarning');
+    if (noDataDiv) {
+        noDataDiv.style.display = 'block';
+    }
+    console.log('No data available - showing warning message');
 }
 
-// Load data when page loads
+// Load data when page loads with multiple attempts
 document.addEventListener('DOMContentLoaded', function() {
-    loadGlobalCardData();
+    console.log('Card page loading...');
+    loadSyncedCardData();
 });
 
-// Also try after short delays for slow loading
-setTimeout(loadGlobalCardData, 100);
-setTimeout(loadGlobalCardData, 500);
-setTimeout(loadGlobalCardData, 1000);
+// Try loading data after a short delay in case localStorage isn't ready yet
+setTimeout(loadSyncedCardData, 100);
+setTimeout(loadSyncedCardData, 500);
+setTimeout(loadSyncedCardData, 1000);
 
 window.addEventListener('load', function() {
-    setTimeout(loadGlobalCardData, 100);
+    setTimeout(loadSyncedCardData, 100);
+});
+
+// Listen for storage events (when data is updated in another tab/window)
+window.addEventListener('storage', function(e) {
+    if (e.key === 'cardData' || e.key === 'globalCardData') {
+        console.log('Storage updated, reloading card data...');
+        loadSyncedCardData();
+    }
 });
 </script>
 </body>
