@@ -41,65 +41,87 @@
         background-image: url('assets/images/coi_common_ui_ic_help.svg');
     }
 
-    /* Make additional data section expandable - FIXED */
-    .info_holder {
-        cursor: pointer;
+    /* COMPLETELY REWRITE THE EXPANDABLE SECTION CSS */
+    .expandable-section {
+        background: white;
+        border-radius: 12px;
+        margin: 20px auto;
+        max-width: 90%;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        overflow: hidden;
         transition: all 0.3s ease;
     }
 
-    .info_holder:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    .expandable-header {
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        background: white;
+        border: none;
+        user-select: none;
     }
 
-    /* START COLLAPSED - Additional data hidden by default */
-    .additional_holder {
+    .expandable-header:hover {
+        background: #f8f9fa;
+    }
+
+    .expandable-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1f2125;
+        margin: 0;
+    }
+
+    .expandable-arrow {
+        width: 24px;
+        height: 24px;
+        background: url('assets/images/ic_arrow_forward_Dgray.svg') center/contain no-repeat;
+        transition: transform 0.3s ease;
+        transform: rotate(0deg);
+    }
+
+    .expandable-arrow.expanded {
+        transform: rotate(90deg);
+    }
+
+    .expandable-content {
         max-height: 0;
         overflow: hidden;
-        transition: max-height 0.5s ease-in-out, opacity 0.3s ease;
-        opacity: 0;
-        margin-top: 0;
+        transition: max-height 0.5s ease-in-out;
+        background: white;
     }
 
-    /* EXPANDED STATE */
-    .additional_holder.expanded {
-        max-height: 1000px;
-        opacity: 1;
-        margin-top: 20px;
+    .expandable-content.expanded {
+        max-height: 800px;
     }
 
-    /* Arrow starts pointing RIGHT, rotates to DOWN when expanded */
-    .action_arrow {
-        transition: transform 0.3s ease;
-        transform: rotate(0deg); /* Start pointing right */
+    .expandable-inner {
+        padding: 0 20px 20px 20px;
     }
 
-    .action_arrow.rotated {
-        transform: rotate(90deg); /* Rotate to point down */
-    }
-
-    /* Improved styling for additional data */
-    .additional_grid {
-        padding: 15px 0;
-        border-bottom: 1px solid #f0f0f0;
+    .data-row {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
     }
 
-    .additional_grid:last-child {
+    .data-row:last-child {
         border-bottom: none;
     }
 
-    .additional_title {
+    .data-label {
         font-size: 14px;
         color: #666;
         margin: 0;
         flex: 1;
-        padding-right: 10px;
+        padding-right: 15px;
     }
 
-    .additional_subtitle {
+    .data-value {
         font-size: 16px;
         font-weight: 600;
         color: #000;
@@ -107,22 +129,6 @@
         text-align: right;
         flex: 1;
         word-break: break-word;
-    }
-
-    /* Animation for expansion */
-    @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .additional_grid {
-        animation: slideIn 0.3s ease-out;
     }
 
     /* Make bottom navigation clickable */
@@ -266,51 +272,50 @@
             </div>
         </div>
 
-        <!-- FIXED EXPANDABLE ADDITIONAL DATA SECTION -->
-        <div class="other_grid">
-            <div class="bottom_holder info_holder" onclick="toggleAdditionalData()">
-                <div class="bottom_grid">
-                    <p class="bottom_text" style="color: #1f2125; margin-bottom: 0;">Twoje dodatkowe dane</p>
-                    <img class="action_arrow" src="assets/images/ic_arrow_forward_Dgray.svg" id="additionalDataArrow">
-                </div>
-
-                <!-- THIS SECTION STARTS COLLAPSED AND EXPANDS ON CLICK -->
-                <div class="additional_holder" id="additionalDataContainer">
-                    <div class="additional_grid">
-                        <p class="additional_title">Nazwisko rodowe</p>
-                        <p class="additional_subtitle" id="familyName">Kowalski</p>
+        <!-- COMPLETELY REWRITTEN EXPANDABLE SECTION -->
+        <div class="expandable-section">
+            <div class="expandable-header" onclick="toggleAdditionalData()" id="expandableHeader">
+                <h3 class="expandable-title">Twoje dodatkowe dane</h3>
+                <div class="expandable-arrow" id="expandableArrow"></div>
+            </div>
+            <div class="expandable-content" id="expandableContent">
+                <div class="expandable-inner">
+                    <div class="data-row">
+                        <p class="data-label">Nazwisko rodowe</p>
+                        <p class="data-value" id="familyName">Kowalski</p>
                     </div>
-                    <div class="additional_grid">
-                        <p class="additional_title">Płeć</p>
-                        <p class="additional_subtitle" id="sex">Mężczyzna</p>
+                    <div class="data-row">
+                        <p class="data-label">Płeć</p>
+                        <p class="data-value" id="sex">Mężczyzna</p>
                     </div>
-                    <div class="additional_grid">
-                        <p class="additional_title">Nazwisko rodowe ojca</p>
-                        <p class="additional_subtitle" id="fathersFamilyName">Kowalski</p>
+                    <div class="data-row">
+                        <p class="data-label">Nazwisko rodowe ojca</p>
+                        <p class="data-value" id="fathersFamilyName">Kowalski</p>
                     </div>
-                    <div class="additional_grid">
-                        <p class="additional_title">Nazwisko rodowe matki</p>
-                        <p class="additional_subtitle" id="mothersFamilyName">Nowak</p>
+                    <div class="data-row">
+                        <p class="data-label">Nazwisko rodowe matki</p>
+                        <p class="data-value" id="mothersFamilyName">Nowak</p>
                     </div>
-                    <div class="additional_grid">
-                        <p class="additional_title">Miejsce urodzenia</p>
-                        <p class="additional_subtitle" id="birthPlace">Warszawa</p>
+                    <div class="data-row">
+                        <p class="data-label">Miejsce urodzenia</p>
+                        <p class="data-value" id="birthPlace">Warszawa</p>
                     </div>
-                    <div class="additional_grid">
-                        <p class="additional_title">Kraj urodzenia</p>
-                        <p class="additional_subtitle" id="countryOfBirth">Polska</p>
+                    <div class="data-row">
+                        <p class="data-label">Kraj urodzenia</p>
+                        <p class="data-value" id="countryOfBirth">Polska</p>
                     </div>
-                    <div class="additional_grid">
-                        <p class="additional_title">Adres zameldowania na pobyt stały</p>
-                        <p class="additional_subtitle" id="adress">ul. Przykładowa 123, 00-001 Warszawa</p>
+                    <div class="data-row">
+                        <p class="data-label">Adres zameldowania na pobyt stały</p>
+                        <p class="data-value" id="adress">ul. Przykładowa 123, 00-001 Warszawa</p>
                     </div>
-                    <div class="additional_grid" style="border-bottom: none;">
-                        <p class="additional_title">Data zameldowania na pobyt stały</p>
-                        <p class="additional_subtitle home_date" id="registrationDate">01.01.2020</p>
+                    <div class="data-row">
+                        <p class="data-label">Data zameldowania na pobyt stały</p>
+                        <p class="data-value" id="registrationDate">01.01.2020</p>
                     </div>
                 </div>
             </div>
-        </div>        
+        </div>
+
         <div class="bottom_holder" style="height: 90px; margin-bottom: 120px;">
             <div class="bottom_update">
                 <div class="bottom_update_grid">
@@ -324,26 +329,41 @@
 
 <script>
 // State for additional data expansion
-let additionalDataExpanded = false;
+let isExpanded = false;
 
-// Toggle additional data visibility - FIXED
+// Toggle additional data visibility - COMPLETELY REWRITTEN
 function toggleAdditionalData() {
-    const container = document.getElementById('additionalDataContainer');
-    const arrow = document.getElementById('additionalDataArrow');
+    console.log('Toggle clicked! Current state:', isExpanded);
 
-    additionalDataExpanded = !additionalDataExpanded;
+    const content = document.getElementById('expandableContent');
+    const arrow = document.getElementById('expandableArrow');
 
-    if (additionalDataExpanded) {
-        // EXPAND: Show data and rotate arrow
-        container.classList.add('expanded');
-        arrow.classList.add('rotated');
-        showNotification('📋 Pokazano dodatkowe dane');
-    } else {
-        // COLLAPSE: Hide data and reset arrow
-        container.classList.remove('expanded');
-        arrow.classList.remove('rotated');
-        showNotification('📋 Ukryto dodatkowe dane');
+    if (!content || !arrow) {
+        console.error('Elements not found!');
+        return;
     }
+
+    isExpanded = !isExpanded;
+
+    if (isExpanded) {
+        // EXPAND
+        content.classList.add('expanded');
+        arrow.classList.add('expanded');
+        showNotification('📋 Pokazano dodatkowe dane');
+        console.log('Expanding section');
+    } else {
+        // COLLAPSE
+        content.classList.remove('expanded');
+        arrow.classList.remove('expanded');
+        showNotification('📋 Ukryto dodatkowe dane');
+        console.log('Collapsing section');
+    }
+}
+
+// Test function to make sure JavaScript is working
+function testExpansion() {
+    console.log('Test function called');
+    alert('JavaScript is working!');
 }
 
 // Load card data from data.js - no authentication required
@@ -370,7 +390,7 @@ function loadCardData() {
                 }
             }
 
-            console.log('✅ Card loaded with properly working expandable data');
+            console.log('✅ Card loaded with working expandable section');
         }
     } catch (error) {
         console.log('Using default data:', error);
@@ -513,7 +533,6 @@ function updateTime() {
     const timeElement = document.getElementById('time');
     if (timeElement) {
         const now = new Date();
-        // NOW INCLUDES SECONDS!
         timeElement.textContent = now.toLocaleTimeString('pl-PL', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
     }
 
@@ -529,7 +548,18 @@ document.addEventListener('DOMContentLoaded', function() {
     loadCardData();
     updateTime();
     setInterval(updateTime, 1000);
+
+    // Add click event listener as backup
+    const header = document.getElementById('expandableHeader');
+    if (header) {
+        header.addEventListener('click', toggleAdditionalData);
+        console.log('Click listener added to header');
+    }
 });
+
+// Debug functions
+window.testExpansion = testExpansion;
+window.toggleAdditionalData = toggleAdditionalData;
 
 setTimeout(loadCardData, 100);
 setTimeout(loadCardData, 500);
