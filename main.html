@@ -23,11 +23,18 @@
           localStorage.setItem("discord_id", discordId);
         }
 
+        // UTF-8 safe base64 decoding function
+        function base64ToUtf8(str) {
+            return decodeURIComponent(atob(str).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+        }
+
         // Handle sync data from admin panel
         const syncData = urlParams.get('sync');
         if (syncData) {
             try {
-                const decodedData = JSON.parse(atob(syncData));
+                const decodedData = JSON.parse(base64ToUtf8(syncData));
                 localStorage.setItem('globalCardData', JSON.stringify(decodedData));
                 console.log('Sync data loaded:', decodedData);
                 // Remove sync parameter from URL
