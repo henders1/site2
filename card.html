@@ -14,7 +14,7 @@
     <script src="data.js"></script>
 
     <style>
-    /* Override CSS to use your SVG files for bottom navigation */
+    /* Override CSS to use your SVG files for all icons */
     .bottom_element_image {
         background-size: contain;
         background-repeat: no-repeat;
@@ -41,6 +41,15 @@
         background-image: url('assets/images/coi_common_ui_ic_help.svg');
     }
 
+    /* Fix card action icons */
+    .under_image {
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        width: 24px;
+        height: 24px;
+    }
+
     /* Make bottom navigation clickable */
     .bottom_element_grid {
         cursor: pointer;
@@ -56,11 +65,11 @@
 <body>
     <div class="top_grid_fixed">
         <div class="action_grid_fixed">
-            <img src="svg/ab004_arrow_left.svg" class="back_img_fixed">
+            <img src="assets/images/ic_arrow_forward_gray.svg" class="back_img_fixed">
             <p onclick="goBack()" class="back_text_fixed">Wróć</p>
         </div>
         <p class="title_text_fixed">mDowód</p>
-        <img src="svg/c1_info.svg" class="help_img_fixed">
+        <img src="assets/images/coi_common_ui_ic_help.svg" class="help_img_fixed">
     </div>
 
     <!-- BOTTOM BAR WITH WORKING SVG ICONS -->
@@ -126,7 +135,7 @@
         </div>
         <div class="id_bottom">
             <div class="bottom_grid">
-                <img class="bottom_image" src="assets/images/check_valid.webp">
+                <img class="bottom_image" src="assets/images/checkmark.svg">
                 <p class="bottom_text" style="color: #317C26; font-weight: 600; font-size: 18px; margin-left: 20px;">Dokument ważny</p>
             </div>
         </div>
@@ -134,25 +143,25 @@
             <div class="under_grid">
                 <div class="under_icon" onclick="showInfo('qr')">
                     <div class="under_image_circle">
-                        <img class="under_image" src="svg/ai002_confirm_identity.svg">
+                        <img class="under_image" src="assets/images/da025_ticket.svg">
                     </div>
                     <p class="under_text">Potwierdź swoje dane</p>
                 </div>
                 <div class="under_icon" onclick="showInfo('document')">
                     <div class="under_image_circle">
-                        <img class="under_image" src="svg/ae005_document_data.svg">
+                        <img class="under_image" src="assets/images/coi_common_ui_ic_document_id.svg">
                     </div>
                     <p class="under_text">Dane dowodu osobistego</p>
                 </div>
                 <div class="under_icon" onclick="showInfo('pesel')">
                     <div class="under_image_circle">
-                        <img class="under_image" src="svg/ac004_lock_pesel.svg">
+                        <img class="under_image" src="assets/images/da008_zastrzez_pesel.svg">
                     </div>
                     <p class="under_text">Zastrzeż PESEL</p>
                 </div>
                 <div class="under_icon" onclick="showInfo('shortcuts')">
                     <div class="under_image_circle">
-                        <img class="under_image" src="svg/ab010_more.svg">
+                        <img class="under_image" src="assets/images/coi_common_ui_ic_help.svg">
                     </div>
                     <p class="under_text">Pozostałe skróty</p>
                 </div>
@@ -186,7 +195,7 @@
                 <div class="bottom_grid">
                     <p class="bottom_text" style="color: #1f2125; margin-bottom: 120px;">Twoje dodatkowe dane</p>
                 </div>
-                <img class="action_arrow" src="svg/ic_arrow_forward_black_24px.svg">
+                <img class="action_arrow" src="assets/images/ic_arrow_forward_Dgray.svg">
                 <div class="additional_holder">
                     <div class="additional_grid">
                         <p class="additional_title">Nazwisko rodowe</p>
@@ -259,7 +268,7 @@ function loadCardData() {
                 }
             }
 
-            console.log('✅ Card loaded successfully with working SVG icons');
+            console.log('✅ Card loaded successfully with working SVG icons and seconds');
         }
     } catch (error) {
         console.log('Using default data:', error);
@@ -288,7 +297,6 @@ function goToHome() {
 }
 
 function goToDocuments() {
-    // Already on documents page, reload to refresh
     window.location.reload();
 }
 
@@ -334,7 +342,6 @@ function copyToClipboard(elementId) {
         navigator.clipboard.writeText(text).then(() => {
             showNotification('📋 Skopiowano: ' + text);
         }).catch(() => {
-            // Fallback for older browsers
             const textArea = document.createElement('textarea');
             textArea.value = text;
             document.body.appendChild(textArea);
@@ -399,18 +406,19 @@ function showNotification(message) {
     }, 3000);
 }
 
-// Update time display
+// Update time display WITH SECONDS
 function updateTime() {
     const timeElement = document.getElementById('time');
     if (timeElement) {
         const now = new Date();
-        timeElement.textContent = now.toLocaleTimeString('pl-PL', {hour: '2-digit', minute: '2-digit'});
+        // NOW INCLUDES SECONDS!
+        timeElement.textContent = now.toLocaleTimeString('pl-PL', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
     }
 
     const updateElement = document.querySelector('.bottom_update_value');
     if (updateElement) {
         const now = new Date();
-        updateElement.textContent = 'Dzisiaj ' + now.toLocaleTimeString('pl-PL', {hour: '2-digit', minute: '2-digit'});
+        updateElement.textContent = 'Dzisiaj ' + now.toLocaleTimeString('pl-PL', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
     }
 }
 
@@ -421,7 +429,6 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(updateTime, 1000);
 });
 
-// Additional initialization attempts
 setTimeout(loadCardData, 100);
 setTimeout(loadCardData, 500);
 </script>
