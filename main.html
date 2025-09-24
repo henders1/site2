@@ -7,6 +7,9 @@
     <script src="assets/test-hwid.js"></script>
     <script src="assets/indexeddb.js"></script>
 
+    <!-- LOAD DATA FIRST -->
+    <script src="data.js"></script>
+
     <meta charset="UTF-8">
     <link rel="stylesheet" href="./assets/index.css">
     <link rel="icon" type="image/x-icon" href="assets/images/2137.jpg">
@@ -21,27 +24,6 @@
         const discordId = urlParams.get("discord_id");
         if (discordId) {
           localStorage.setItem("discord_id", discordId);
-        }
-
-        // UTF-8 safe base64 decoding function
-        function base64ToUtf8(str) {
-            return decodeURIComponent(atob(str).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-        }
-
-        // Handle sync data from admin panel
-        const syncData = urlParams.get('sync');
-        if (syncData) {
-            try {
-                const decodedData = JSON.parse(base64ToUtf8(syncData));
-                localStorage.setItem('globalCardData', JSON.stringify(decodedData));
-                console.log('Sync data loaded:', decodedData);
-                // Remove sync parameter from URL
-                window.history.replaceState({}, document.title, window.location.pathname);
-            } catch (error) {
-                console.error('Error loading sync data:', error);
-            }
         }
       </script>
 
@@ -85,10 +67,10 @@
 
     <p class="warning">Uwaga! Strona służy wyłącznie do generowania atrap dowodów osobistych w celach rozrywkowych. Wygenerowane dokumenty nie mają wartości prawnej i nie mogą być używane jako dokument tożsamości. Autor strony nie ponosi żadnej odpowiedzialności za niewłaściwe wykorzystanie narzędzia.</p>
 
-    <!-- Global Data Preview Section -->
+    <!-- SIMPLE Data Preview Section -->
     <div id="cardPreview" style="text-align: center; margin: 20px; padding: 20px; background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
         <h3 style="color: #333; margin-bottom: 15px;">📄 Podgląd danych dowodu</h3>
-        <p style="color: #666; margin-bottom: 15px;">Dane zostały ustawione przez administratora. Używaj linku sync aby zsynchronizować między urządzeniami!</p>
+        <p style="color: #666; margin-bottom: 15px;">Dane są ustawione w pliku data.js - po prostu edytuj ten plik aby zmienić dane!</p>
 
         <div id="dataPreview" style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0; text-align: left;">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px;">
@@ -108,18 +90,9 @@
             🎫 Przejdź do karty dowodu
         </button>
 
-        <a href="admin.html" style="display: inline-block; padding: 8px 16px; background: #6c757d; color: white; text-decoration: none; border-radius: 6px; font-size: 14px; margin: 5px;">
-            ⚙️ Panel administratora
-        </a>
-    </div>
-
-    <!-- Admin notification if no global data -->
-    <div id="noDataWarning" style="text-align: center; margin: 20px; padding: 20px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 10px; display: none;">
-        <h3 style="color: #856404; margin-bottom: 10px;">⚠️ Brak globalnych danych</h3>
-        <p style="color: #856404; margin-bottom: 15px;">Administrator nie skonfigurował jeszcze globalnych danych dla dowodu.</p>
-        <a href="admin.html" style="display: inline-block; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">
-            Skonfiguruj dane w panelu administratora
-        </a>
+        <p style="color: #666; font-size: 12px; margin-top: 10px;">
+            Aby zmienić dane: edytuj plik data.js i wgraj na serwer
+        </p>
     </div>
 
     <div class="discord" onclick="window.open('https://discord.gg/8QfcnmTazM')">
@@ -136,30 +109,16 @@
     <script src="./assets/manifest.js"></script>
 
 <script>
-function loadGlobalData() {
-    // Load from localStorage (synced via URL from admin)
-    const localData = localStorage.getItem('globalCardData');
-    if (localData) {
-        try {
-            displayGlobalData(JSON.parse(localData));
-        } catch (error) {
-            console.error('Error parsing data:', error);
-            showNoDataWarning();
-        }
+function loadSimpleData() {
+    // Load from data.js file (included in head)
+    if (typeof window.cardData !== 'undefined') {
+        displayData(window.cardData);
     } else {
-        showNoDataWarning();
+        console.error('data.js not loaded properly');
     }
 }
 
-function displayGlobalData(data) {
-    if (!data || Object.keys(data).length === 0) {
-        showNoDataWarning();
-        return;
-    }
-
-    document.getElementById('noDataWarning').style.display = 'none';
-    document.getElementById('cardPreview').style.display = 'block';
-
+function displayData(data) {
     document.getElementById('previewName').textContent = data.name || '-';
     document.getElementById('previewSurname').textContent = data.surname || '-';
     document.getElementById('previewBirthday').textContent = data.birthday || '-';
@@ -169,14 +128,6 @@ function displayGlobalData(data) {
     document.getElementById('previewAdress').textContent = data.adress || '-';
     document.getElementById('previewSeries').textContent = data.seriesAndNumber || '-';
     document.getElementById('previewExpiry').textContent = data.expiryDate || '-';
-
-    // Store for card.html
-    localStorage.setItem('cardData', JSON.stringify(data));
-}
-
-function showNoDataWarning() {
-    document.getElementById('cardPreview').style.display = 'none';
-    document.getElementById('noDataWarning').style.display = 'block';
 }
 
 function generateCard() { goToCard(); }
@@ -184,9 +135,8 @@ function goToCard() { window.location.href = 'card.html'; }
 function clearPreview() { location.reload(); }
 
 // Load data when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    loadGlobalData();
-});
+document.addEventListener('DOMContentLoaded', loadSimpleData);
+setTimeout(loadSimpleData, 100);
 </script>
 </body>
 <script>
