@@ -1,5 +1,4 @@
 <head>
-    <!-- REMOVED auth-check.js - no more login redirects! -->
     <title>mObywatel</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="assets/card.css?v=1.2">
@@ -10,7 +9,6 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="viewport" content="width=device-width, initial-scale=0.8, user-scalable=no">
     <meta name="mobile-web-app-capable" content="yes">
-    <!-- REMOVED authentication scripts that cause redirects -->
 
     <!-- LOAD DATA FROM data.js -->
     <script src="data.js"></script>
@@ -25,13 +23,15 @@
         <p class="title_text_fixed">mDowód</p>
         <img src="svg/c1_info.svg" class="help_img_fixed">
     </div>
+
+    <!-- ORIGINAL CSS ICON CLASSES FROM YOUR WEBSITE -->
     <div class="bottom_bar">
         <div class="bottom_bar_grid">
             <div class="bottom_element_grid" onclick="goToHome()">
                 <div class="bottom_element_image home"></div>
                 <p class="bottom_element_text">Pulpit</p>
             </div>
-            <div class="bottom_element_grid" onclick="goToCard()">
+            <div class="bottom_element_grid" onclick="goToDocuments()">
                 <div class="bottom_element_image documents_open"></div>
                 <p class="bottom_element_text open">Dokumenty</p>
             </div>
@@ -49,6 +49,7 @@
             </div>
         </div>
     </div>
+
     <div class="container">
         <p class="time_text" id="time"></p>
         <p id="date" style="display: none;"></p>
@@ -195,12 +196,9 @@
     </div>
 
 <script>
-// NO AUTHENTICATION - Works on any device!
-// Load card data from data.js without any login checks
-
+// Load card data from data.js
 function loadCardData() {
     try {
-        // Load from data.js
         if (typeof window.cardData !== 'undefined' && window.cardData) {
             const data = window.cardData;
 
@@ -222,45 +220,148 @@ function loadCardData() {
                 }
             }
 
-            console.log('✅ Card loaded successfully - no auth required');
+            console.log('✅ Card loaded successfully with your CSS icons');
         }
     } catch (error) {
         console.log('Using default data:', error);
     }
 }
 
-// Simple navigation functions (no auth checks)
+// Navigation functions using your existing navigation flow
 function goBack() {
-    if (document.referrer) {
+    if (document.referrer && document.referrer.includes(window.location.origin)) {
         window.history.back();
     } else {
-        window.location.href = 'home.html';
+        try {
+            window.location.href = 'home.html';
+        } catch (e) {
+            window.location.reload();
+        }
     }
 }
 
-function goToHome() { window.location.href = 'home.html'; }
-function goToCard() { window.location.reload(); }
-function goToServices() { console.log('Services clicked'); }
-function goToQR() { console.log('QR clicked'); }
-function goToMore() { console.log('More clicked'); }
+function goToHome() {
+    try {
+        window.location.href = 'home.html';
+    } catch (e) {
+        console.log('Navigating to home...');
+        window.history.back();
+    }
+}
+
+function goToDocuments() {
+    // Already on documents page, just reload to refresh data
+    window.location.reload();
+}
+
+function goToServices() {
+    // Try to navigate to services page, fallback to notification
+    try {
+        window.location.href = 'services.html';
+    } catch (e) {
+        showNotification('🛠️ Sekcja usług w przygotowaniu!');
+    }
+}
+
+function goToQR() {
+    // Try to navigate to QR page, fallback to notification  
+    try {
+        window.location.href = 'qr.html';
+    } catch (e) {
+        showNotification('📱 Funkcja QR w przygotowaniu!');
+    }
+}
+
+function goToMore() {
+    // Try to navigate to more page, fallback to notification
+    try {
+        window.location.href = 'more.html';
+    } catch (e) {
+        showNotification('⋯ Więcej opcji w przygotowaniu!');
+    }
+}
 
 function showInfo(type) {
-    console.log('Info clicked:', type);
+    const messages = {
+        'qr': '📱 Funkcja potwierdzania danych będzie dostępna wkrótce!',
+        'document': '📄 Wyświetlasz już dane dowodu osobistego!',
+        'pesel': '🔒 Funkcja zastrzeżenia PESEL w przygotowaniu!',
+        'shortcuts': '🔗 Dodatkowe skróty będą dostępne wkrótce!'
+    };
+
+    showNotification(messages[type] || 'ℹ️ Funkcja w przygotowaniu!');
 }
 
 function copyToClipboard(elementId) {
     const element = document.getElementById(elementId);
     if (element) {
-        navigator.clipboard.writeText(element.textContent).then(() => {
-            console.log('Copied to clipboard');
+        const text = element.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            showNotification('📋 Skopiowano: ' + text);
         }).catch(() => {
-            console.log('Copy failed');
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            showNotification('📋 Skopiowano: ' + text);
         });
     }
 }
 
 function updateCard() {
-    window.location.reload();
+    showNotification('🔄 Aktualizowanie...');
+    setTimeout(() => {
+        window.location.reload();
+    }, 1000);
+}
+
+// Simple notification system
+function showNotification(message) {
+    const existing = document.querySelector('.notification');
+    if (existing) existing.remove();
+
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 123, 255, 0.95);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 25px;
+        font-size: 14px;
+        font-weight: bold;
+        z-index: 10000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        animation: slideDown 0.3s ease-out;
+    `;
+
+    if (!document.querySelector('#notificationStyle')) {
+        const style = document.createElement('style');
+        style.id = 'notificationStyle';
+        style.textContent = `
+            @keyframes slideDown {
+                from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+                to { opacity: 1; transform: translateX(-50%) translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.style.animation = 'slideDown 0.3s ease-out reverse';
+            setTimeout(() => notification.remove(), 300);
+        }
+    }, 3000);
 }
 
 // Update time display
