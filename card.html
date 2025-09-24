@@ -7,21 +7,384 @@
     <link rel="apple-touch-icon" href="assets/images/2137.jpg">
     <link rel="shortcut icon" href="assets/images/2137.jpg">
     <meta name="format-detection" content="telephone=no">
-    <meta name="viewport" content="width=device-width, initial-scale=0.8, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="mobile-web-app-capable" content="yes">
 
     <!-- LOAD DATA FROM data.js -->
     <script src="data.js"></script>
 
     <style>
-    /* Override CSS to use your SVG files properly */
+    /* LAYOUT FIXES */
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background-color: #f5f6fb;
+        overflow-x: hidden;
+    }
+
+    .container {
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+        padding-bottom: 120px; /* Space for bottom navigation */
+    }
+
+    .top_grid_fixed {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        z-index: 1000;
+        padding: 50px 20px 20px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .action_grid_fixed {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .back_img_fixed {
+        width: 24px;
+        height: 24px;
+        margin-right: 8px;
+    }
+
+    .back_text_fixed {
+        color: #007AFF;
+        font-size: 17px;
+        margin: 0;
+    }
+
+    .title_text_fixed {
+        font-size: 17px;
+        font-weight: 600;
+        margin: 0;
+        color: #000;
+    }
+
+    .help_img_fixed {
+        width: 24px;
+        height: 24px;
+    }
+
+    .time_text {
+        text-align: center;
+        font-size: 16px;
+        color: #666;
+        margin: 120px 0 20px 0;
+        padding: 0;
+    }
+
+    /* ID CARD LAYOUT FIX */
+    .id_image_data {
+        position: relative;
+        width: 90%;
+        max-width: 350px;
+        margin: 0 auto 30px auto;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+
+    .id_image {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .id_own_image {
+        position: absolute;
+        top: 60px;
+        left: 25px;
+        width: 80px;
+        height: 100px;
+        border-radius: 8px;
+        background-color: #ddd;
+        background-size: cover;
+        background-position: center;
+        border: 2px solid white;
+    }
+
+    .flag_video {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 60px;
+        height: auto;
+    }
+
+    .eagle_video {
+        position: absolute;
+        top: 60px;
+        right: 25px;
+        width: 40px;
+        height: auto;
+    }
+
+    .eagle_text {
+        position: absolute;
+        top: 110px;
+        right: 25px;
+        font-size: 12px;
+        color: #666;
+        text-align: center;
+        line-height: 14px;
+        margin: 0;
+        width: 60px;
+    }
+
+    .id_data_grid {
+        position: absolute;
+        bottom: 20px;
+        left: 120px;
+        right: 20px;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .data_holder {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .data_title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #000;
+        margin: 0 0 2px 0;
+    }
+
+    .data_value {
+        font-size: 12px;
+        color: #666;
+        margin: 0;
+    }
+
+    /* DOCUMENT VALID SECTION */
+    .id_bottom {
+        width: 90%;
+        max-width: 350px;
+        margin: 0 auto 30px auto;
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .bottom_grid {
+        display: flex;
+        align-items: center;
+    }
+
+    .bottom_image {
+        width: 24px;
+        height: 24px;
+        margin-right: 12px;
+    }
+
+    .bottom_text {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: #317C26;
+    }
+
+    /* ACTION BUTTONS */
+    .under_container {
+        width: 90%;
+        max-width: 350px;
+        margin: 0 auto 30px auto;
+    }
+
+    .under_grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .under_icon {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: transform 0.2s ease;
+    }
+
+    .under_icon:active {
+        transform: scale(0.95);
+    }
+
+    .under_image_circle {
+        width: 40px;
+        height: 40px;
+        margin: 0 auto 10px auto;
+        border-radius: 50%;
+        background: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .under_image {
+        width: 24px;
+        height: 24px;
+    }
+
+    .under_text {
+        font-size: 14px;
+        color: #333;
+        margin: 0;
+        line-height: 1.3;
+    }
+
+    /* DOCUMENT INFO SECTION */
+    .confirm_info {
+        width: 90%;
+        max-width: 350px;
+        margin: 0 auto 30px auto;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .confirm_box {
+        padding: 20px;
+        border-bottom: 1px solid #f0f0f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .confirm_box:last-child {
+        border-bottom: none;
+    }
+
+    .box_top {
+        font-size: 14px;
+        color: #666;
+        margin: 0;
+    }
+
+    .box_value {
+        font-size: 16px;
+        font-weight: 600;
+        color: #000;
+        margin: 5px 0 0 0;
+    }
+
+    .box_highlight {
+        color: #007AFF;
+    }
+
+    .main_button {
+        background: #007AFF;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    /* ADDITIONAL DATA SECTION */
+    .other_grid {
+        width: 90%;
+        max-width: 350px;
+        margin: 0 auto 30px auto;
+    }
+
+    .bottom_holder {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+
+    .additional_holder {
+        margin-top: 20px;
+    }
+
+    .additional_grid {
+        padding: 15px 0;
+        border-bottom: 1px solid #f0f0f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .additional_grid:last-child {
+        border-bottom: none;
+    }
+
+    .additional_title {
+        font-size: 14px;
+        color: #666;
+        margin: 0;
+        flex: 1;
+    }
+
+    .additional_subtitle {
+        font-size: 16px;
+        font-weight: 600;
+        color: #000;
+        margin: 0;
+        text-align: right;
+        flex: 1;
+    }
+
+    /* BOTTOM NAVIGATION */
+    .bottom_bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        border-top: 1px solid #e0e0e0;
+        padding: 10px 0 30px 0;
+        z-index: 1000;
+    }
+
+    .bottom_bar_grid {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .bottom_element_grid {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        transition: opacity 0.2s ease;
+    }
+
+    .bottom_element_grid:active {
+        opacity: 0.7;
+    }
+
     .bottom_element_image {
         width: 24px;
         height: 24px;
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center;
-        margin: 0 auto 5px auto;
+        margin-bottom: 5px;
     }
 
     .bottom_element_image.home {
@@ -44,75 +407,46 @@
         background-image: url('assets/images/coi_common_ui_ic_help.svg');
     }
 
-    .bottom_element_grid {
-        cursor: pointer;
-        transition: opacity 0.2s ease;
-    }
-
-    .bottom_element_grid:hover {
-        opacity: 0.7;
+    .bottom_element_text {
+        font-size: 12px;
+        color: #666;
+        margin: 0;
+        text-align: center;
     }
 
     .bottom_element_text.open {
-        color: #007bff;
-        font-weight: bold;
+        color: #007AFF;
+        font-weight: 600;
     }
     </style>
 
 </head>
 <body>
     <div class="top_grid_fixed">
-        <div class="action_grid_fixed">
+        <div class="action_grid_fixed" onclick="goBack()">
             <img src="assets/images/ic_arrow_forward_gray.svg" class="back_img_fixed">
-            <p onclick="goBack()" class="back_text_fixed">Wróć</p>
+            <p class="back_text_fixed">Wróć</p>
         </div>
         <p class="title_text_fixed">mDowód</p>
         <img src="assets/images/coi_common_ui_ic_help.svg" class="help_img_fixed">
     </div>
 
-    <!-- BOTTOM BAR WITH YOUR SVG FILES -->
-    <div class="bottom_bar">
-        <div class="bottom_bar_grid">
-            <div class="bottom_element_grid" onclick="goToHome()">
-                <div class="bottom_element_image home"></div>
-                <p class="bottom_element_text">Pulpit</p>
-            </div>
-            <div class="bottom_element_grid" onclick="goToDocuments()">
-                <div class="bottom_element_image documents_open"></div>
-                <p class="bottom_element_text open">Dokumenty</p>
-            </div>
-            <div class="bottom_element_grid" onclick="goToServices()">
-                <div class="bottom_element_image services"></div>
-                <p class="bottom_element_text">Usługi</p>
-            </div>
-            <div class="bottom_element_grid" onclick="goToQR()">
-                <div class="bottom_element_image qr"></div>
-                <p class="bottom_element_text">Kod QR</p>
-            </div>
-            <div class="bottom_element_grid" onclick="goToMore()">
-                <div class="bottom_element_image more"></div>
-                <p class="bottom_element_text">Więcej</p>
-            </div>
-        </div>
-    </div>
-
     <div class="container">
-        <p class="time_text" id="time"></p>
-        <p id="date" style="display: none;"></p>
+        <p class="time_text" id="time">20:31</p>
+
         <div class="id_image_data">
             <img draggable="false" class="id_image" src="assets/images/CHANGE_IT_home_mid_card.svg">
-            <div class="inset"></div>
             <div class="id_own_image"></div>
             <img draggable="false" src="https://i.imgur.com/rriU3Zp.gif" class="flag_video">
             <img draggable="false" src="https://i.imgur.com/PF3ac4i.gif" class="eagle_video">
             <p class="eagle_text">Rzeczpospolita<br>Polska</p>
             <div class="id_data_grid">
                 <div class="data_holder">
-                    <p class="data_title firstname" id="name">Jan</p>
+                    <p class="data_title" id="name">Jan</p>
                     <p class="data_value">Imię (imiona)</p>
                 </div>
                 <div class="data_holder">
-                    <p class="data_title surname" id="surname">Kowalski</p>
+                    <p class="data_title" id="surname">Kowalski</p>
                     <p class="data_value">Nazwisko</p>
                 </div>
                 <div class="data_holder">
@@ -129,12 +463,14 @@
                 </div>
             </div>
         </div>
+
         <div class="id_bottom">
             <div class="bottom_grid">
                 <img class="bottom_image" src="assets/images/checkmark.svg">
-                <p class="bottom_text" style="color: #317C26; font-weight: 600; font-size: 18px; margin-left: 20px;">Dokument ważny</p>
+                <p class="bottom_text">Dokument ważny</p>
             </div>
         </div>
+
         <div class="under_container">
             <div class="under_grid">
                 <div class="under_icon" onclick="showInfo('qr')">
@@ -163,35 +499,46 @@
                 </div>
             </div>
         </div>
+
         <div class="confirm_info">
             <div class="confirm_box">
-                <p class="box_top">Seria i numer</p>
-                <p class="box_value box_highlight" id="seriesAndNumber">ABC123456</p>
+                <div>
+                    <p class="box_top">Seria i numer</p>
+                    <p class="box_value box_highlight" id="seriesAndNumber">ABC123456</p>
+                </div>
                 <button class="main_button" onclick="copyToClipboard('seriesAndNumber')">Kopiuj</button>
             </div>
             <div class="confirm_box">
-                <p class="box_top">Termin ważności</p>
-                <p class="box_value" id="expiryDate">15.06.2034</p>
+                <div>
+                    <p class="box_top">Termin ważności</p>
+                    <p class="box_value" id="expiryDate">15.06.2034</p>
+                </div>
             </div>
             <div class="confirm_box">
-                <p class="box_top">Data wydania</p>
-                <p class="box_value" id="givenDate">15.06.2024</p>
+                <div>
+                    <p class="box_top">Data wydania</p>
+                    <p class="box_value" id="givenDate">15.06.2024</p>
+                </div>
             </div>
             <div class="confirm_box">
-                <p class="box_top">Imię ojca</p>
-                <p class="box_value" id="fathersName">Piotr</p>
+                <div>
+                    <p class="box_top">Imię ojca</p>
+                    <p class="box_value" id="fathersName">Piotr</p>
+                </div>
             </div>
-            <div class="confirm_box" style="border: none;">
-                <p class="box_top">Imię matki</p>
-                <p class="box_value" id="mothersName">Anna</p>
+            <div class="confirm_box">
+                <div>
+                    <p class="box_top">Imię matki</p>
+                    <p class="box_value" id="mothersName">Anna</p>
+                </div>
             </div>
         </div>
+
         <div class="other_grid">
-            <div class="bottom_holder info_holder">
+            <div class="bottom_holder">
                 <div class="bottom_grid">
-                    <p class="bottom_text" style="color: #1f2125; margin-bottom: 120px;">Twoje dodatkowe dane</p>
+                    <p class="bottom_text" style="color: #1f2125; margin-bottom: 0;">Twoje dodatkowe dane</p>
                 </div>
-                <img class="action_arrow" src="assets/images/ic_arrow_forward_Dgray.svg">
                 <div class="additional_holder">
                     <div class="additional_grid">
                         <p class="additional_title">Nazwisko rodowe</p>
@@ -221,26 +568,42 @@
                         <p class="additional_title">Adres zameldowania na pobyt stały</p>
                         <p class="additional_subtitle" id="adress">ul. Przykładowa 123, 00-001 Warszawa</p>
                     </div>
-                    <div class="additional_grid" style="border-bottom: none;">
+                    <div class="additional_grid">
                         <p class="additional_title">Data zameldowania na pobyt stały</p>
                         <p class="additional_subtitle home_date">01.01.2020</p>
                     </div>
                 </div>
             </div>
-        </div>        
-        <div class="bottom_holder" style="height: 90px; margin-bottom: 120px;">
-            <div class="bottom_update">
-                <div class="bottom_update_grid">
-                    <p class="bottom_update_text" style="margin-left: 0px;">Ostatnia aktualizacja</p>
-                    <p class="bottom_update_value" style="margin-left: 0px;">Dzisiaj</p>
-                </div>
-                <button class="main_button update" onclick="updateCard()">Aktualizuj</button>
+        </div>
+    </div>
+
+    <div class="bottom_bar">
+        <div class="bottom_bar_grid">
+            <div class="bottom_element_grid" onclick="goToHome()">
+                <div class="bottom_element_image home"></div>
+                <p class="bottom_element_text">Pulpit</p>
+            </div>
+            <div class="bottom_element_grid" onclick="goToDocuments()">
+                <div class="bottom_element_image documents_open"></div>
+                <p class="bottom_element_text open">Dokumenty</p>
+            </div>
+            <div class="bottom_element_grid" onclick="goToServices()">
+                <div class="bottom_element_image services"></div>
+                <p class="bottom_element_text">Usługi</p>
+            </div>
+            <div class="bottom_element_grid" onclick="goToQR()">
+                <div class="bottom_element_image qr"></div>
+                <p class="bottom_element_text">Kod QR</p>
+            </div>
+            <div class="bottom_element_grid" onclick="goToMore()">
+                <div class="bottom_element_image more"></div>
+                <p class="bottom_element_text">Więcej</p>
             </div>
         </div>
     </div>
 
 <script>
-// Load card data from data.js - no authentication required
+// Load card data from data.js
 function loadCardData() {
     try {
         if (typeof window.cardData !== 'undefined' && window.cardData) {
@@ -264,7 +627,7 @@ function loadCardData() {
                 }
             }
 
-            console.log('✅ Card loaded successfully with your SVG files');
+            console.log('✅ Card loaded successfully with fixed layout');
         }
     } catch (error) {
         console.log('Using default data:', error);
@@ -408,12 +771,6 @@ function updateTime() {
     if (timeElement) {
         const now = new Date();
         timeElement.textContent = now.toLocaleTimeString('pl-PL', {hour: '2-digit', minute: '2-digit'});
-    }
-
-    const updateElement = document.querySelector('.bottom_update_value');
-    if (updateElement) {
-        const now = new Date();
-        updateElement.textContent = 'Dzisiaj ' + now.toLocaleTimeString('pl-PL', {hour: '2-digit', minute: '2-digit'});
     }
 }
 
