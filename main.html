@@ -7,9 +7,6 @@
     <script src="assets/test-hwid.js"></script>
     <script src="assets/indexeddb.js"></script>
 
-    <!-- Global data file - LOAD THIS FIRST -->
-    <script src="global-data.js"></script>
-
     <meta charset="UTF-8">
     <link rel="stylesheet" href="./assets/index.css">
     <link rel="icon" type="image/x-icon" href="assets/images/2137.jpg">
@@ -24,6 +21,20 @@
         const discordId = urlParams.get("discord_id");
         if (discordId) {
           localStorage.setItem("discord_id", discordId);
+        }
+
+        // Handle sync data from admin panel
+        const syncData = urlParams.get('sync');
+        if (syncData) {
+            try {
+                const decodedData = JSON.parse(atob(syncData));
+                localStorage.setItem('globalCardData', JSON.stringify(decodedData));
+                console.log('Sync data loaded:', decodedData);
+                // Remove sync parameter from URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } catch (error) {
+                console.error('Error loading sync data:', error);
+            }
         }
       </script>
 
@@ -70,7 +81,7 @@
     <!-- Global Data Preview Section -->
     <div id="cardPreview" style="text-align: center; margin: 20px; padding: 20px; background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
         <h3 style="color: #333; margin-bottom: 15px;">📄 Podgląd danych dowodu</h3>
-        <p style="color: #666; margin-bottom: 15px;">Dane zostały ustawione przez administratora i są takie same dla wszystkich użytkowników na wszystkich urządzeniach</p>
+        <p style="color: #666; margin-bottom: 15px;">Dane zostały ustawione przez administratora. Używaj linku sync aby zsynchronizować między urządzeniami!</p>
 
         <div id="dataPreview" style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0; text-align: left;">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px;">
@@ -119,9 +130,15 @@
 
 <script>
 function loadGlobalData() {
-    // Load from global-data.js file (works across ALL devices)
-    if (typeof window.globalCardData !== 'undefined') {
-        displayGlobalData(window.globalCardData);
+    // Load from localStorage (synced via URL from admin)
+    const localData = localStorage.getItem('globalCardData');
+    if (localData) {
+        try {
+            displayGlobalData(JSON.parse(localData));
+        } catch (error) {
+            console.error('Error parsing data:', error);
+            showNoDataWarning();
+        }
     } else {
         showNoDataWarning();
     }
@@ -146,7 +163,7 @@ function displayGlobalData(data) {
     document.getElementById('previewSeries').textContent = data.seriesAndNumber || '-';
     document.getElementById('previewExpiry').textContent = data.expiryDate || '-';
 
-    // Store in localStorage as backup for card.html
+    // Store for card.html
     localStorage.setItem('cardData', JSON.stringify(data));
 }
 
@@ -163,9 +180,6 @@ function clearPreview() { location.reload(); }
 document.addEventListener('DOMContentLoaded', function() {
     loadGlobalData();
 });
-
-// Also try after a short delay for slow loading
-setTimeout(loadGlobalData, 500);
 </script>
 </body>
 <script>
