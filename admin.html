@@ -99,6 +99,20 @@
     <script>
         const ADMIN_PASSWORD = 'admin123'; // Change this!
 
+        // UTF-8 safe base64 encoding functions
+        function utf8ToBase64(str) {
+            return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+                function toSolidBytes(match, p1) {
+                    return String.fromCharCode('0x' + p1);
+            }));
+        }
+
+        function base64ToUtf8(str) {
+            return decodeURIComponent(atob(str).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+        }
+
         // Load data from URL parameters when page loads
         window.addEventListener('load', loadFromUrl);
 
@@ -108,7 +122,7 @@
 
             if (syncData) {
                 try {
-                    const decodedData = JSON.parse(atob(syncData));
+                    const decodedData = JSON.parse(base64ToUtf8(syncData));
                     // Store the synced data
                     localStorage.setItem('globalCardData', JSON.stringify(decodedData));
                     // Show success message
@@ -117,6 +131,7 @@
                     window.history.replaceState({}, document.title, window.location.pathname);
                 } catch (error) {
                     console.error('Error loading sync data:', error);
+                    showMessage('error', '❌ Błąd podczas wczytywania danych sync: ' + error.message);
                 }
             }
         }
@@ -175,8 +190,8 @@
             }
 
             try {
-                // Encode data as base64 for URL
-                const encodedData = btoa(savedData);
+                // Use UTF-8 safe base64 encoding
+                const encodedData = utf8ToBase64(savedData);
                 const currentUrl = window.location.origin + window.location.pathname.replace('admin.html', 'main.html');
                 const syncUrl = `${currentUrl}?sync=${encodedData}`;
 
@@ -194,6 +209,7 @@
 
             } catch (error) {
                 showMessage('error', '❌ Błąd podczas generowania linku: ' + error.message);
+                console.error('Encoding error:', error);
             }
         }
 
