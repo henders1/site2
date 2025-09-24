@@ -11,6 +11,74 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="viewport" content="width=device-width, initial-scale=0.8, user-scalable=no">
     <meta name="mobile-web-app-capable" content="yes">
+
+    <style>
+    /* Fix all More page icons using your SVG files */
+    .bottom_element_image {
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    .bottom_element_image.home {
+        background-image: url('assets/images/coi_common_ui_ic_mobywatel_logo.svg');
+    }
+
+    .bottom_element_image.documents {
+        background-image: url('assets/images/coi_common_ui_ic_document_id.svg');
+    }
+
+    .bottom_element_image.services {
+        background-image: url('assets/images/da031_mbiznes.svg');
+    }
+
+    .bottom_element_image.qr {
+        background-image: url('assets/images/da025_ticket.svg');
+    }
+
+    .bottom_element_image.more {
+        background-image: url('assets/images/coi_common_ui_ic_help.svg');
+    }
+
+    /* Fix settings page icons */
+    .setting_element_image {
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    .setting_element_image.password {
+        background-image: url('assets/images/da008_zastrzez_pesel.svg');
+    }
+
+    .setting_element_image.biometric {
+        background-image: url('assets/images/checkmark.svg');
+    }
+
+    .setting_element_image.notifications {
+        background-image: url('assets/images/coi_common_ui_ic_help.svg');
+    }
+
+    .setting_element_image.language {
+        background-image: url('assets/images/coi_common_ui_ic_mobywatel_logo.svg');
+    }
+
+    .setting_element_image.certificates {
+        background-image: url('assets/images/coi_common_ui_ic_document_id.svg');
+    }
+
+    .setting_element_image.history {
+        background-image: url('assets/images/da025_ticket.svg');
+    }
+
+    .setting_element_image.legal {
+        background-image: url('assets/images/da031_mbiznes.svg');
+    }
+
+    .setting_element_image.support {
+        background-image: url('assets/images/coi_common_ui_ic_help.svg');
+    }
+    </style>
 </head>
 <body oncontextmenu="return false;">
 
@@ -33,73 +101,179 @@
                 <p class="bottom_element_text">Kod QR</p>
             </div>
             <div class="bottom_element_grid" send="more">
-                <div class="bottom_element_image more more_open"></div>
+                <div class="bottom_element_image more"></div>
                 <p class="bottom_element_text open">Więcej</p>
             </div>
         </div>
     </div>
 
     <div class="container">
-        <p class="main_title">Więcej</p>
-        <p class="title">Ustawienia</p>
-        <div class="services_list">
-            <div class="service">
-                <img class="service_icon" src="svg/aa008_change_password.svg">
-                <p class="service_name">Zmień hasło</p>
-                <img class="arrow" src="assets/images/ic_arrow_forward_gray.svg">
+        <div class="more_main_grid">
+            <div class="more_title_grid">
+                <h1 class="more_title">Ustawienia</h1>
             </div>
-            <div class="service">
-                <img class="service_icon" src="svg/aa009_fingerprint.svg">
-                <p class="service_name">Logowanie biometryczne</p>
-                <img class="arrow" src="assets/images/ic_arrow_forward_gray.svg">
+
+            <div class="settings_section">
+                <div class="section_title_grid">
+                    <h2 class="section_title">Ustawienia</h2>
+                </div>
+
+                <div class="settings_grid">
+                    <div class="setting_element" onclick="changePassword()">
+                        <div class="setting_element_image password"></div>
+                        <div class="setting_element_content">
+                            <p class="setting_element_text">Zmień hasło</p>
+                        </div>
+                        <img src="assets/images/ic_arrow_forward_Dgray.svg" class="setting_element_arrow">
+                    </div>
+
+                    <div class="setting_element" onclick="biometricLogin()">
+                        <div class="setting_element_image biometric"></div>
+                        <div class="setting_element_content">
+                            <p class="setting_element_text">Logowanie biometryczne</p>
+                        </div>
+                        <img src="assets/images/ic_arrow_forward_Dgray.svg" class="setting_element_arrow">
+                    </div>
+
+                    <div class="setting_element" onclick="notifications()">
+                        <div class="setting_element_image notifications"></div>
+                        <div class="setting_element_content">
+                            <p class="setting_element_text">Powiadomienia</p>
+                        </div>
+                        <img src="assets/images/ic_arrow_forward_Dgray.svg" class="setting_element_arrow">
+                    </div>
+
+                    <div class="setting_element" onclick="languageSettings()">
+                        <div class="setting_element_image language"></div>
+                        <div class="setting_element_content">
+                            <p class="setting_element_text">Język aplikacji</p>
+                        </div>
+                        <img src="assets/images/ic_arrow_forward_Dgray.svg" class="setting_element_arrow">
+                    </div>
+
+                    <div class="setting_element" onclick="certificates()">
+                        <div class="setting_element_image certificates"></div>
+                        <div class="setting_element_content">
+                            <p class="setting_element_text">Wydane certyfikaty</p>
+                        </div>
+                        <img src="assets/images/ic_arrow_forward_Dgray.svg" class="setting_element_arrow">
+                    </div>
+                </div>
             </div>
-            <div class="service">
-                <img class="service_icon" src="svg/ab013_notifications.svg">
-                <p class="service_name">Powiadomienia</p>
-                <img class="arrow" src="assets/images/ic_arrow_forward_gray.svg">
-            </div>
-            <div class="service">
-                <img class="service_icon" src="svg/ag005_globe.svg">
-                <p class="service_name">Język aplikacji</p>
-                <img class="arrow" src="assets/images/ic_arrow_forward_gray.svg">
-            </div>
-            <div class="service" style="border: none;">
-                <img class="service_icon" src="svg/ae001_published_certificate.svg">
-                <p class="service_name">Wydane certyfikaty</p>
-                <img class="arrow" src="assets/images/ic_arrow_forward_gray.svg">
+
+            <div class="settings_section">
+                <div class="section_title_grid">
+                    <h2 class="section_title">Pozostałe</h2>
+                </div>
+
+                <div class="settings_grid">
+                    <div class="setting_element" onclick="activityHistory()">
+                        <div class="setting_element_image history"></div>
+                        <div class="setting_element_content">
+                            <p class="setting_element_text">Historia aktywności</p>
+                        </div>
+                        <img src="assets/images/ic_arrow_forward_Dgray.svg" class="setting_element_arrow">
+                    </div>
+
+                    <div class="setting_element" onclick="legalInfo()">
+                        <div class="setting_element_image legal"></div>
+                        <div class="setting_element_content">
+                            <p class="setting_element_text">Informacje prawne</p>
+                        </div>
+                        <img src="assets/images/ic_arrow_forward_Dgray.svg" class="setting_element_arrow">
+                    </div>
+
+                    <div class="setting_element" onclick="technicalSupport()">
+                        <div class="setting_element_image support"></div>
+                        <div class="setting_element_content">
+                            <p class="setting_element_text">Pomoc techniczna</p>
+                        </div>
+                        <img src="assets/images/ic_arrow_forward_Dgray.svg" class="setting_element_arrow">
+                    </div>
+                </div>
             </div>
         </div>
-        <p class="title">Pozostałe</p>
-        <div class="services_list" style="margin-bottom: 150px;"  style="margin-bottom: 150px;">
-            <div class="service">
-                <img class="service_icon" src="svg/aa016_history.svg">
-                <p class="service_name">Historia aktywności</p>
-                <img class="arrow" src="assets/images/ic_arrow_forward_gray.svg">
-            </div>
-            <div class="service">
-                <img class="service_icon" src="svg/ad005_framed_person.svg">
-                <p class="service_name">Informacje prawne</p>
-                <img class="arrow" src="assets/images/ic_arrow_forward_gray.svg">
-            </div>
-            <div class="service" style="border: none;">
-                <img class="service_icon" src="assets/images/coi_common_ui_ic_help.svg">
-                <p class="service_name">Pomoc techniczna</p>
-                <img class="arrow" src="assets/images/ic_arrow_forward_gray.svg">
-            </div>
-        </div>
-    </div>
     </div>
 
-    <script src="assets/bar.js"></script>
-    <script src="assets/manifest.js"></script>
-</body>
 <script>
-    fetch('/api/antidebug.js')
-      .then(res => res.text())
-      .then(code => {
-        const s = document.createElement('script');
-        s.textContent = code;
-        document.body.appendChild(s);
-      });
-  </script>
-</html>
+// Settings functions
+function changePassword() {
+    showNotification('🔑 Zmiana hasła - funkcja w przygotowaniu!');
+}
+
+function biometricLogin() {
+    showNotification('👆 Logowanie biometryczne - funkcja w przygotowaniu!');
+}
+
+function notifications() {
+    showNotification('🔔 Powiadomienia - funkcja w przygotowaniu!');
+}
+
+function languageSettings() {
+    showNotification('🌍 Język aplikacji - funkcja w przygotowaniu!');
+}
+
+function certificates() {
+    showNotification('📜 Wydane certyfikaty - funkcja w przygotowaniu!');
+}
+
+function activityHistory() {
+    showNotification('📊 Historia aktywności - funkcja w przygotowaniu!');
+}
+
+function legalInfo() {
+    showNotification('⚖️ Informacje prawne - funkcja w przygotowaniu!');
+}
+
+function technicalSupport() {
+    showNotification('🛠️ Pomoc techniczna - funkcja w przygotowaniu!');
+}
+
+// Notification system
+function showNotification(message) {
+    const existing = document.querySelector('.notification');
+    if (existing) existing.remove();
+
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 123, 255, 0.95);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 25px;
+        font-size: 14px;
+        font-weight: bold;
+        z-index: 10000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        animation: slideDown 0.3s ease-out;
+    `;
+
+    if (!document.querySelector('#notificationStyle')) {
+        const style = document.createElement('style');
+        style.id = 'notificationStyle';
+        style.textContent = `
+            @keyframes slideDown {
+                from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+                to { opacity: 1; transform: translateX(-50%) translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.style.animation = 'slideDown 0.3s ease-out reverse';
+            setTimeout(() => notification.remove(), 300);
+        }
+    }, 3000);
+}
+</script>
+
+</body>
