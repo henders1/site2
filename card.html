@@ -13,77 +13,6 @@
     <!-- LOAD DATA FROM data.js -->
     <script src="data.js"></script>
 
-    <style>
-    /* Override CSS to use your SVG files for all icons */
-    .bottom_element_image {
-        background-size: contain;
-        background-repeat: no-repeat;
-        background-position: center;
-    }
-
-    .bottom_element_image.home {
-        background-image: url('assets/images/coi_common_ui_ic_mobywatel_logo.svg');
-    }
-
-    .bottom_element_image.documents_open {
-        background-image: url('assets/images/coi_common_ui_ic_document_id.svg');
-    }
-
-    .bottom_element_image.services {
-        background-image: url('assets/images/da031_mbiznes.svg');
-    }
-
-    .bottom_element_image.qr {
-        background-image: url('assets/images/da025_ticket.svg');
-    }
-
-    .bottom_element_image.more {
-        background-image: url('assets/images/coi_common_ui_ic_help.svg');
-    }
-
-    /* Make bottom navigation clickable */
-    .bottom_element_grid {
-        cursor: pointer;
-        transition: opacity 0.2s ease;
-    }
-
-    .bottom_element_grid:hover {
-        opacity: 0.7;
-    }
-
-    /* Super basic clickable area */
-    .click-to-expand {
-        cursor: pointer;
-        user-select: none;
-        padding: 15px 5px;
-        background: transparent;
-    }
-
-    .click-to-expand:active {
-        background: #f0f0f0 !important;
-    }
-
-    /* FORCE THE ADDITIONAL DATA TO BE VISIBLE WITH !important */
-    #myAdditionalData {
-        width: 100% !important;
-        max-width: 100% !important;
-        max-height: none !important;
-        overflow: visible !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-        position: relative !important;
-        z-index: 1 !important;
-        background: white !important;
-        margin: 10px 0 !important;
-        padding: 10px !important;
-        border: 1px solid #ddd !important;
-    }
-
-    #myAdditionalData.hidden {
-        display: none !important;
-    }
-    </style>
-
 </head>
 <body>
     <div class="top_grid_fixed">
@@ -95,27 +24,27 @@
         <img src="assets/images/coi_common_ui_ic_help.svg" class="help_img_fixed">
     </div>
 
-    <!-- BOTTOM BAR WITH WORKING SVG ICONS -->
+    <!-- BOTTOM BAR -->
     <div class="bottom_bar">
         <div class="bottom_bar_grid">
             <div class="bottom_element_grid" onclick="goToHome()">
-                <div class="bottom_element_image home"></div>
+                <div class="bottom_element_image home" style="background-image: url('assets/images/coi_common_ui_ic_mobywatel_logo.svg');"></div>
                 <p class="bottom_element_text">Pulpit</p>
             </div>
             <div class="bottom_element_grid" onclick="goToDocuments()">
-                <div class="bottom_element_image documents_open"></div>
+                <div class="bottom_element_image documents_open" style="background-image: url('assets/images/coi_common_ui_ic_document_id.svg');"></div>
                 <p class="bottom_element_text open">Dokumenty</p>
             </div>
             <div class="bottom_element_grid" onclick="goToServices()">
-                <div class="bottom_element_image services"></div>
+                <div class="bottom_element_image services" style="background-image: url('assets/images/da031_mbiznes.svg');"></div>
                 <p class="bottom_element_text">Usługi</p>
             </div>
             <div class="bottom_element_grid" onclick="goToQR()">
-                <div class="bottom_element_image qr"></div>
+                <div class="bottom_element_image qr" style="background-image: url('assets/images/da025_ticket.svg');"></div>
                 <p class="bottom_element_text">Kod QR</p>
             </div>
             <div class="bottom_element_grid" onclick="goToMore()">
-                <div class="bottom_element_image more"></div>
+                <div class="bottom_element_image more" style="background-image: url('assets/images/coi_common_ui_ic_help.svg');"></div>
                 <p class="bottom_element_text">Więcej</p>
             </div>
         </div>
@@ -214,67 +143,48 @@
             </div>
         </div>
 
-        <!-- SUPER SIMPLE EXPANDABLE SECTION WITH FORCED VISIBILITY -->
+        <!-- WORKING EXPANDABLE SECTION BASED ON ORIGINAL STRUCTURE -->
         <div class="other_grid">
             <div class="bottom_holder info_holder">
-                <!-- IMPROVED INLINE JAVASCRIPT WITH CLASS TOGGLE -->
-                <div class="click-to-expand" onclick="
-                    var content = document.getElementById('myAdditionalData');
-                    var arrow = document.getElementById('myArrow');
-                    console.log('CLICKED! Current classes:', content.className);
-                    if (content.classList.contains('hidden')) {
-                        content.classList.remove('hidden');
-                        content.style.display = 'block';
-                        arrow.innerHTML = '↓';
-                        console.log('EXPANDED - removed hidden class');
-                    } else {
-                        content.classList.add('hidden');
-                        content.style.display = 'none';
-                        arrow.innerHTML = '→';
-                        console.log('COLLAPSED - added hidden class');
-                    }
-                ">
-                    <div class="bottom_grid">
-                        <p class="bottom_text" style="color: #1f2125; margin-bottom: 0;">Twoje dodatkowe dane</p>
-                        <span style="font-size: 20px; color: #666; margin-left: 10px;" id="myArrow">→</span>
-                    </div>
+                <!-- CLICKABLE HEADER -->
+                <div class="bottom_grid" onclick="toggleAdditionalData()" style="cursor: pointer; user-select: none;">
+                    <p class="bottom_text" style="color: #1f2125; margin-bottom: 0;">Twoje dodatkowe dane</p>
+                    <img class="action_arrow" src="assets/images/ic_arrow_forward_Dgray.svg" id="additionalArrow" style="transform: rotate(0deg); transition: transform 0.3s ease;">
                 </div>
 
-                <!-- ADDITIONAL INFO WITH FORCED VISIBILITY -->
-                <div id="myAdditionalData" class="hidden">
-                    <div class="additional_holder">
-                        <div class="confirm_box">
-                            <p class="box_top">Nazwisko rodowe</p>
-                            <p class="box_value" id="familyName">Kowalski</p>
-                        </div>
-                        <div class="confirm_box">
-                            <p class="box_top">Płeć</p>
-                            <p class="box_value" id="sex">Mężczyzna</p>
-                        </div>
-                        <div class="confirm_box">
-                            <p class="box_top">Nazwisko rodowe ojca</p>
-                            <p class="box_value" id="fathersFamilyName">Kowalski</p>
-                        </div>
-                        <div class="confirm_box">
-                            <p class="box_top">Nazwisko rodowe matki</p>
-                            <p class="box_value" id="mothersFamilyName">Nowak</p>
-                        </div>
-                        <div class="confirm_box">
-                            <p class="box_top">Miejsce urodzenia</p>
-                            <p class="box_value" id="birthPlace">Warszawa</p>
-                        </div>
-                        <div class="confirm_box">
-                            <p class="box_top">Kraj urodzenia</p>
-                            <p class="box_value" id="countryOfBirth">Polska</p>
-                        </div>
-                        <div class="confirm_box">
-                            <p class="box_top">Adres zameldowania na pobyt stały</p>
-                            <p class="box_value" id="adress">ul. Przykładowa 123, 00-001 Warszawa</p>
-                        </div>
-                        <div class="confirm_box" style="border: none;">
-                            <p class="box_top">Data zameldowania na pobyt stały</p>
-                            <p class="box_value" id="registrationDate">01.01.2020</p>
-                        </div>
+                <!-- COLLAPSIBLE CONTENT USING ORIGINAL STRUCTURE -->
+                <div class="additional_holder" id="additionalData" style="max-height: 0; overflow: hidden; transition: max-height 0.5s ease;">
+                    <div class="additional_grid">
+                        <p class="additional_title">Nazwisko rodowe</p>
+                        <p class="additional_subtitle" id="familyName">Kowalski</p>
+                    </div>
+                    <div class="additional_grid">
+                        <p class="additional_title">Płeć</p>
+                        <p class="additional_subtitle" id="sex">Mężczyzna</p>
+                    </div>
+                    <div class="additional_grid">
+                        <p class="additional_title">Nazwisko rodowe ojca</p>
+                        <p class="additional_subtitle" id="fathersFamilyName">Kowalski</p>
+                    </div>
+                    <div class="additional_grid">
+                        <p class="additional_title">Nazwisko rodowe matki</p>
+                        <p class="additional_subtitle" id="mothersFamilyName">Nowak</p>
+                    </div>
+                    <div class="additional_grid">
+                        <p class="additional_title">Miejsce urodzenia</p>
+                        <p class="additional_subtitle" id="birthPlace">Warszawa</p>
+                    </div>
+                    <div class="additional_grid">
+                        <p class="additional_title">Kraj urodzenia</p>
+                        <p class="additional_subtitle" id="countryOfBirth">Polska</p>
+                    </div>
+                    <div class="additional_grid">
+                        <p class="additional_title">Adres zameldowania na pobyt stały</p>
+                        <p class="additional_subtitle" id="adress">ul. Przykładowa 123, 00-001 Warszawa</p>
+                    </div>
+                    <div class="additional_grid" style="border-bottom: none;">
+                        <p class="additional_title">Data zameldowania na pobyt stały</p>
+                        <p class="additional_subtitle home_date" id="registrationDate">01.01.2020</p>
                     </div>
                 </div>
             </div>
@@ -292,6 +202,28 @@
     </div>
 
 <script>
+// SIMPLE WORKING TOGGLE FUNCTION
+let isExpanded = false;
+
+function toggleAdditionalData() {
+    const content = document.getElementById('additionalData');
+    const arrow = document.getElementById('additionalArrow');
+
+    isExpanded = !isExpanded;
+
+    if (isExpanded) {
+        // EXPAND
+        content.style.maxHeight = '1000px';
+        arrow.style.transform = 'rotate(90deg)';
+        console.log('EXPANDED additional data');
+    } else {
+        // COLLAPSE
+        content.style.maxHeight = '0';
+        arrow.style.transform = 'rotate(0deg)';
+        console.log('COLLAPSED additional data');
+    }
+}
+
 // Load card data from data.js - no authentication required
 function loadCardData() {
     try {
@@ -316,7 +248,7 @@ function loadCardData() {
                 }
             }
 
-            console.log('✅ Card loaded with SUPER VISIBLE additional data');
+            console.log('✅ Card loaded with original structure + working toggle');
         }
     } catch (error) {
         console.log('Using default data:', error);
@@ -408,7 +340,7 @@ function updateCard() {
     }, 1000);
 }
 
-// Notification system (only for other functions, not expand/collapse)
+// Notification system
 function showNotification(message) {
     const existing = document.querySelector('.notification');
     if (existing) existing.remove();
@@ -474,7 +406,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadCardData();
     updateTime();
     setInterval(updateTime, 1000);
-    console.log('Page loaded with FORCED VISIBILITY for additional data');
+    console.log('Card loaded with original structure + working expandable section');
 });
 
 setTimeout(loadCardData, 100);
